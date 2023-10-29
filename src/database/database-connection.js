@@ -8,13 +8,14 @@ class DatabaseConnection {
     }
 
     getConnection() {
+        const prodconf = require("dotenv").parse(fs.readFileSync(path.resolve(__dirname, "../../db_prod.env")));
         const sequelize = new Sequelize(
-            process.env.MYSQL_DATABASE, 
-            process.env.MYSQL_USER, 
-            process.env.MYSQL_PASSWORD, 
+            prodconf.MYSQL_DATABASE, 
+            prodconf.MYSQL_USER, 
+            prodconf.MYSQL_PASSWORD, 
             {
-                host: process.env.MYSQL_HOST,
-                port: process.env.MYSQL_PORT,
+                host: prodconf.MYSQL_HOST,
+                port: prodconf.MYSQL_PORT,
                 dialect: "mysql"
             }
         );
@@ -33,7 +34,7 @@ class DatabaseConnection {
 
 class DatabaseConnectionDev {
     constructor() {
-        this.connection = this.getConnection();
+        this.driver = this.getConnection();
     }
 
     getConnection() {
@@ -53,7 +54,7 @@ class DatabaseConnectionDev {
 
     async isOnline() {
         try {
-            await this.connection.authenticate();
+            await this.driver.authenticate();
             return true;
         } catch (error) {
             console.log(error);

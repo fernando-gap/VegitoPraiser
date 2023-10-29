@@ -1,6 +1,17 @@
 {
     "properties": [
-        { "name": "PraiseCount" },
-        { "name": "NotifyMe" }
+        { 
+            "name": "PraiseCount", 
+            "defaultValue":  {
+                "count": 0
+            }
+        },
+        { 
+            "name": "NotifyMe", 
+            "defaultValue": {
+                "enabled": false,
+                "nextMessage": null
+            }
+        }
     ]
 }

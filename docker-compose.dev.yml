@@ -9,3 +9,7 @@ services:
     env_file:
       - db_dev.env
     restart: on-failure
+    volumes:
+      - data_dev:/var/lib/mysql
+volumes:
+  data_dev:

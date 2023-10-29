@@ -59,8 +59,10 @@ class Model {
         }
     }
 
-    sync() {
-        this.driver.sync({ force: process.NODE_ENV === "development" ? true : false });
+    async sync() {
+        await this.User.sync();
+        await this.Property.sync();
+        await this.UserProperty.sync();
     }
     
     online() {

@@ -1,30 +1,14 @@
 const { Client, Events, Collection, GatewayIntentBits } = require("discord.js");
-const { token } = require("./config.json");
+const { token, guildId } = require("./config.json");
 const readFilesRecursively = require("./util/recursive-read-files.js");
 const Model = require("./src/database/models.js");
-const { DatabaseConnection } = require("./src/database/database-connection.js");
 const seed = require("./src/database/seed.js");
-const dotenv = require("dotenv");
-const path = require("path");
-
-try {
-    const db = dotenv.config({ path: path.resolve(__dirname, 
-        `./db_${process.env.NODE_ENV === "production" ? "prod" : "dev"}.env`)
-    });
-
-    if (db.error) throw new Error(`Could not load database configuration file: NODE=${process.env.NODE_ENV}`);
-    else console.log(`Database Configuration Loaded! Environment: ${process.env.NODE_ENV}`);
-
-} catch (exception) {
-    throw new Error("Database Configuration File is Missing", exception);
-}
+const DataAccessFactory = require("./src/database/data-access-factory");
+const DatababaseConnectionFactory = require("./src/database/database-connection-factory");
 
 class Bot {
     async init() {
         await this.setup();
-    }
-
-    async database() {
     }
 
     async setup() {
@@ -40,14 +24,27 @@ class Bot {
             }
         });
     }
+
+    static async setupUser(database, id) {
+        const user = await DataAccessFactory.getUser(database);
+        await seed.each(async (property) => {
+            try {
+                await user.create(id, property.name, property.defaultValue);
+            } catch (e) {
+                if (e.name === "SequelizeUniqueConstraintError") return;
+                console.log(e);
+            }
+        });
+
+    }
 }
 
 class Database {
     async init(connection) {
         this.connection = connection;
         this.model = new Model(connection);
-        await seed(this.model.Property);
-        this.model.sync();
+        await this.model.sync();
+        await seed.property(this.model.Property);
     }
 }
 
@@ -55,7 +52,7 @@ const database = new Database();
 const bot = new Bot();
 
 (async () => {
-    await database.init(new DatabaseConnection());
+    await database.init(await DatababaseConnectionFactory.getConnection());
     await bot.init();
     await bot.client.login(token);
 
@@ -73,6 +70,21 @@ const bot = new Bot();
             return;
         }
 
+        if (guildId === interaction.guildId) {
+            try {
+                const dev = new Database();
+                await dev.init(await DatababaseConnectionFactory.getDevelopmentConnection());
+                await Bot.setupUser(dev, interaction.user.id);
+                interaction.db = dev;
+            } catch (e) {
+                await interaction.reply("**Development Database Not Connected**", { ephemeral: true });
+                return;
+            }
+        } else {
+            await Bot.setupUser(database, interaction.user.id);
+            interaction.db = database;
+        }
+        
         try {
             await command.execute(interaction);
         } catch (error) {
@@ -85,7 +97,3 @@ const bot = new Bot();
         }
     });
 })();
-
-module.exports = {
-    bot, database
-};

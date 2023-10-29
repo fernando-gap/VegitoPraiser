@@ -22,6 +22,7 @@ class DataAccessUser {
     }
 
     async create(id, property, value) {
+        console.log(this.db);
         await this.db.connection.driver.transaction(async (t) => {
             await this.db.model.User.create({
                 id: id
