@@ -1,40 +1,71 @@
-const { DataTypes } = require("sequelize");
+const { DataTypes, DatabaseError } = require("sequelize");
 
-module.exports = async (db) => {
-    const model = {};
-    model.User = db.connection.define("User", {
-        id: {
-            type: DataTypes.STRING,
-            primaryKey: true
+class Model {
+    constructor(connection) {
+        if (connection !== undefined) {
+            this.driver = connection.driver;
         }
-    });
+    }
 
-    model.Property = db.connection.define("Property", {
-        name: {
-            primaryKey: true,
-            type: DataTypes.STRING,
+    get User() {
+        if (this.online()) {
+            return this.driver.define("User", {
+                id: {
+                    type: DataTypes.STRING,
+                    primaryKey: true
+                }
+            });
+        } else {
+            throw new DatabaseError("Database has no active connection");
         }
-    });
+    }
 
-    model.UserProperty = db.connection.define("UserProperty", {
-        userId: {
-            type: DataTypes.STRING,
-            references: {
-                model: model.User,
-                key: "id"
-            }
-        },
-        propertyId: {
-            type: DataTypes.STRING,
-            references: {
-                model: model.Property,
-                key: "name"
-            }
-        },
-        value: {
-            type: DataTypes.TEXT
+    get Property() {
+        if (this.online()) {
+            return this.driver.define("Property", {
+                name: {
+                    primaryKey: true,
+                    type: DataTypes.STRING,
+                }
+            });
+        } else {
+            throw new DatabaseError("Database has no active connection");
         }
-    });
+    }
 
-    return model;
-};
+    get UserProperty() {
+        if (this.online()) {
+            return this.driver.define("UserProperty", {
+                userId: {
+                    type: DataTypes.STRING,
+                    references: {
+                        model: this.User,
+                        key: "id"
+                    }
+                },
+                propertyId: {
+                    type: DataTypes.STRING,
+                    references: {
+                        model: this.Property,
+                        key: "name"
+                    }
+                },
+                value: {
+                    type: DataTypes.TEXT
+                }
+            });
+        } else {
+            throw new DatabaseError("Database has no active connection");
+        }
+    }
+
+    sync() {
+        this.driver.sync({ force: process.NODE_ENV === "development" ? true : false });
+    }
+    
+    online() {
+        return this.driver !== undefined ? true : false;
+    }
+}
+
+module.exports = Model;

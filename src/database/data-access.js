@@ -1,23 +1,12 @@
-const buildModel = require("./models.js");
 const { Op } = require("sequelize");
 
-class Database {
-    constructor(db) {
-        this.db = db;
-    }
-    close() {
-        this.db.connection.close();
-    }
-}
-
-class DatabaseUser {
+class DataAccessUser {
     constructor(db) {
         this.db = db;
     }
 
     async select(id, property) {
-        const model = await buildModel(this.db);
-        const data = await model.UserProperty.findOne({
+        const data = await this.db.model.UserProperty.findOne({
             where: {
                 [Op.and]: [
                     { userId: id },
@@ -33,13 +22,12 @@ class DatabaseUser {
     }
 
     async create(id, property, value) {
-        const model = await buildModel(this.db);
-        await this.db.connection.transaction(async (t) => {
-            await model.User.create({
+        await this.db.connection.driver.transaction(async (t) => {
+            await this.db.model.User.create({
                 id: id
             }, { transaction: t});
 
-            await model.UserProperty.create({
+            await this.db.model.UserProperty.create({
                 userId: id,
                 propertyId: property,
                 value: JSON.stringify(value)
@@ -49,8 +37,7 @@ class DatabaseUser {
     }
 
     async update(id, property, value) {
-        const model = await buildModel(this.db);
-        await model.UserProperty.update({ value: JSON.stringify(value)}, {
+        await this.db.model.UserProperty.update({ value: JSON.stringify(value)}, {
             where: {
                 [Op.and]: [
                     { userId: id },
@@ -62,6 +49,5 @@ class DatabaseUser {
 }
 
 module.exports = {
-    Database,
-    DatabaseUser
+    DataAccessUser
 };

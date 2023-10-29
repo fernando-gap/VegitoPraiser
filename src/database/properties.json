@@ -1,0 +1,6 @@
+{
+    "properties": [
+        { "name": "PraiseCount" },
+        { "name": "NotifyMe" }
+    ]
+}

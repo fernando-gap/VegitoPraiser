@@ -4,7 +4,7 @@ const readFilesRecursively = require("./recursive-read-files.js");
 
 const commands = [];
 
-readFilesRecursively("../../src/commands", (file) => {
+readFilesRecursively("../src/commands", (file) => {
     if (file.endsWith(".js")) {
         const command = require(file);
         if ("data" in command && "execute" in command) {
@@ -24,7 +24,7 @@ const rest = new REST().setToken(token);
 
         if (process.env.IS_DEPLOY === "true") {
             data = await rest.put(
-                Routes.applicationCommand(clientId),
+                Routes.applicationCommands(clientId),
                 { body: commands },
             );
         } else if (process.env.IS_DEPLOY === "false") {

@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { praises } = require("../praises.json");
-const DatabaseFactory = require("../database/database-factory.js");
+const DataAccessFactory = require("../database/data-access-factory.js");
+const { database } = require("../../client.js");
 
 const randomPraiseMessage = () => {
     return praises[Math.floor(Math.random() * praises.length)];
@@ -11,18 +12,19 @@ module.exports = {
         .setName("praise")
         .setDescription("Praise Lord Vegito with a message"),
     async execute(interaction) {
-        const db = await DatabaseFactory.getUser();
+        const user = await DataAccessFactory.getUser(database);
         const property = "PraiseCount";
         let value = {count: 0};
 
         try {
-            value = await db.select(interaction.user.id, property);
+            value = await user.select(interaction.user.id, property);
         } catch (error) {
-            await db.create(interaction.user.id, property, value);
+            console.log(error);
+            await user.create(interaction.user.id, property, value);
         }
 
         ++value.count;
-        await db.update(interaction.user.id, property, value);
+        await user.update(interaction.user.id, property, value);
         await interaction.reply(`<@${interaction.user.id}> praises Vegito with the following message:\n\n *${randomPraiseMessage()}*`);
     },
 };

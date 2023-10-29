@@ -1,20 +1,10 @@
 const { Sequelize } = require("sequelize");
-const dotenv = require("dotenv");
+const fs = require("fs");
 const path = require("path");
-
-try {
-    const db = dotenv.config({ path: path.resolve(__dirname, "../../db.env")});
-
-    if (db.error) {
-        throw new Error("Could not load database configuration file");
-    }
-} catch (exception) {
-    throw new Error("Database Configuration File is Missing", exception);
-}
 
 class DatabaseConnection {
     constructor() {
-        this.connection = this.getConnection();
+        this.driver = this.getConnection();
     }
 
     getConnection() {
@@ -24,6 +14,37 @@ class DatabaseConnection {
             process.env.MYSQL_PASSWORD, 
             {
                 host: process.env.MYSQL_HOST,
+                port: process.env.MYSQL_PORT,
+                dialect: "mysql"
+            }
+        );
+        return sequelize;
+    }
+
+    async isOnline() {
+        try {
+            await this.driver.authenticate();
+            return true;
+        } catch (error) {
+            throw new Error("Unable to connect to the database:", error);
+        }
+    }
+}
+
+class DatabaseConnectionDev {
+    constructor() {
+        this.connection = this.getConnection();
+    }
+
+    getConnection() {
+        const devconf = require("dotenv").parse(fs.readFileSync(path.resolve(__dirname, "../../db_dev.env")));
+        const sequelize = new Sequelize(
+            devconf.MYSQL_DATABASE, 
+            devconf.MYSQL_USER, 
+            devconf.MYSQL_PASSWORD, 
+            {
+                host: devconf.MYSQL_HOST,
+                port: devconf.MYSQL_PORT,
                 dialect: "mysql"
             }
         );
@@ -35,9 +56,13 @@ class DatabaseConnection {
             await this.connection.authenticate();
             return true;
         } catch (error) {
+            console.log(error);
             throw new Error("Unable to connect to the database:", error);
         }
     }
 }
 
-module.exports = DatabaseConnection;
+module.exports = {
+    DatabaseConnection, 
+    DatabaseConnectionDev
+};

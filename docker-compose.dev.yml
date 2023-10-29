@@ -3,8 +3,9 @@ version: '3.1'
 services:
   db_dev:
     image: mysql
+    container_name: "DevVegitoDB"
     ports:
       - 3307:3306
     env_file:
-      - db.env
-    restart: always
+      - db_dev.env
+    restart: on-failure
