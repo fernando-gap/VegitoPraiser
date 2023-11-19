@@ -11,12 +11,8 @@ module.exports = {
         .setName("praise")
         .setDescription("Praise Lord Vegito with a message"),
     async execute(interaction) {
-        const property = "PraiseCount";
-        const user = await DataAccessFactory.getUser(interaction.db);
-        const value = await user.select(interaction.user.id, property);
-        ++value.count;
-
-        await user.update(interaction.user.id, property, value);
+        const user = await DataAccessFactory.getProperty(interaction.db);
+        await user.updatePraiserCount(interaction.user.id);
         await interaction.reply(`<@${interaction.user.id}> praises Vegito with the following message:\n\n *${randomPraiseMessage()}*`);
     },
 };

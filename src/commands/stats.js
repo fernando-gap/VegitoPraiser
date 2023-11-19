@@ -6,9 +6,8 @@ module.exports = {
         .setName("stats")
         .setDescription("Check out your profile status as a fellow Vegito praiser"),
     async execute(interaction) {
-        const property = "PraiseCount";
-        const user = await DataAccessFactory.getUser(interaction.db);
-        const value = await user.select(interaction.user.id, property);
-        interaction.reply(`<@${interaction.user.id}> has a total of **${value.count}** praises.\n\n *"Stay strong and push forward, channeling the indomitable spirit of Vegito within you!"*`);
+        const user = await DataAccessFactory.getProperty(interaction.db);
+        const value = await user.select(interaction.user.id, "praise_count");
+        interaction.reply(`<@${interaction.user.id}> has a total of **${value.praise_count}** praises.\n\n *"Stay strong and push forward, channeling the indomitable spirit of Vegito within you!"*`);
     },
 };

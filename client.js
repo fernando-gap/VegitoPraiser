@@ -2,7 +2,6 @@ const { Client, Events, Collection, GatewayIntentBits } = require("discord.js");
 const { token, guildId } = require("./config.json");
 const readFilesRecursively = require("./util/recursive-read-files.js");
 const Model = require("./src/database/models.js");
-const seed = require("./src/database/seed.js");
 const DataAccessFactory = require("./src/database/data-access-factory");
 const DatababaseConnectionFactory = require("./src/database/database-connection-factory");
 
@@ -25,26 +24,16 @@ class Bot {
         });
     }
 
-    static async setupUser(database, id) {
-        const user = await DataAccessFactory.getUser(database);
-        await seed.each(async (property) => {
-            try {
-                await user.create(id, property.name, property.defaultValue);
-            } catch (e) {
-                if (e.name === "SequelizeUniqueConstraintError") return;
-                console.log(e);
-            }
-        });
-
+    static async setupUserProperty(database, id) {
+        const userProperty = await DataAccessFactory.getUserProperty(database);
+        await user.create(id);
     }
 }
 
 class Database {
-    async init(connection) {
-        this.connection = connection;
-        this.model = new Model(connection);
-        await this.model.sync();
-        await seed.property(this.model.Property);
+    async init(force = false) {
+        this.model = new Model(this.connection);
+        await this.model.sync(force);
     }
 }
 
@@ -52,7 +41,6 @@ const database = new Database();
 const bot = new Bot();
 
 (async () => {
-    await database.init(await DatababaseConnectionFactory.getConnection());
     await bot.init();
     await bot.client.login(token);
 
@@ -72,18 +60,20 @@ const bot = new Bot();
 
         if (guildId === interaction.guildId) {
             try {
-                const dev = new Database();
-                await dev.init(await DatababaseConnectionFactory.getDevelopmentConnection());
-                await Bot.setupUser(dev, interaction.user.id);
-                interaction.db = dev;
+                database.connection = await DatababaseConnectionFactory.getDevelopmentConnection();
             } catch (e) {
+                console.log(e);
                 await interaction.reply("**Development Database Not Connected**", { ephemeral: true });
                 return;
             }
         } else {
-            await Bot.setupUser(database, interaction.user.id);
-            interaction.db = database;
-        }
+            database.connection = await DatababaseConnectionFactory.getConnection();
+        } 
+        
+        await database.init();
+        interaction.db = database;
+        const user = await DataAccessFactory.getUser(interaction.db);
+        await user.create(interaction.user.id);
         
         try {
             await command.execute(interaction);
@@ -97,3 +87,7 @@ const bot = new Bot();
         }
     });
 })();
+
+module.exports = {
+    bot, database
+}

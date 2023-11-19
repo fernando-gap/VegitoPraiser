@@ -22,47 +22,37 @@ class Model {
 
     get Property() {
         if (this.online()) {
-            return this.driver.define("Property", {
-                name: {
-                    primaryKey: true,
+            const p = this.driver.define("Property", {
+                praise_count: {
+                    type: DataTypes.INTEGER,
+                    allowNull: false,
+                    defaultValue: 0
+                }
+            }, {
+                timestamps: false
+            });
+
+            this.User.hasOne(p, {
+                foreignKey: {
+                    name: "user_id",
                     type: DataTypes.STRING,
+                    unique: "fk_unique"
                 }
             });
+
+            return p;
         } else {
             throw new DatabaseError("Database has no active connection");
         }
     }
 
     get UserProperty() {
-        if (this.online()) {
-            return this.driver.define("UserProperty", {
-                userId: {
-                    type: DataTypes.STRING,
-                    references: {
-                        model: this.User,
-                        key: "id"
-                    }
-                },
-                propertyId: {
-                    type: DataTypes.STRING,
-                    references: {
-                        model: this.Property,
-                        key: "name"
-                    }
-                },
-                value: {
-                    type: DataTypes.TEXT
-                }
-            });
-        } else {
-            throw new DatabaseError("Database has no active connection");
-        }
+        throw new Error("Property is Deprecated");
     }
 
     async sync() {
         await this.User.sync();
         await this.Property.sync();
-        await this.UserProperty.sync();
     }
     
     online() {

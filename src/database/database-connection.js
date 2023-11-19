@@ -46,8 +46,11 @@ class DatabaseConnectionDev {
             {
                 host: devconf.MYSQL_HOST,
                 port: devconf.MYSQL_PORT,
-                dialect: "mysql"
-            }
+                dialect: "mysql",
+                define: {
+                    freezeTableName: true
+                }
+            },
         );
         return sequelize;
     }
