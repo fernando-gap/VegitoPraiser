@@ -36,7 +36,7 @@ class Model {
                 foreignKey: {
                     name: "user_id",
                     type: DataTypes.STRING,
-                    unique: "fk_unique"
+                    unique: "fk_unique_property"
                 }
             });
 
@@ -46,13 +46,39 @@ class Model {
         }
     }
 
-    get UserProperty() {
-        throw new Error("Property is Deprecated");
+    get Schedule() {
+        if (this.online()) {
+            const s = this.driver.define("Schedule", {
+                channel_id: {
+                    type: DataTypes.STRING,
+                    allowNull: false
+                },
+                last_praise: {
+                    type: DataTypes.DATE,
+                    defaultValue: DataTypes.NOW,
+                    allowNull: false
+                }
+            }, {
+                timestamps: false
+            });
+            this.User.hasOne(s, {
+                foreignKey: {
+                    name: "user_id",
+                    type: DataTypes.STRING,
+                    unique: "fk_unique_schedule"
+                }
+            });
+
+            return s;
+        } else {
+            throw new DatabaseError("Database has no driver connenction");
+        }
     }
 
     async sync() {
         await this.User.sync();
         await this.Property.sync();
+        await this.Schedule.sync();
     }
     
     online() {

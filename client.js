@@ -4,6 +4,7 @@ const readFilesRecursively = require("./util/recursive-read-files.js");
 const Model = require("./src/database/models.js");
 const DataAccessFactory = require("./src/database/data-access-factory");
 const DatababaseConnectionFactory = require("./src/database/database-connection-factory");
+const Scheduler = require("./src/scheduler/scheduler.js");
 
 class Bot {
     async init() {
@@ -23,17 +24,22 @@ class Bot {
             }
         });
     }
-
-    static async setupUserProperty(database, id) {
-        const userProperty = await DataAccessFactory.getUserProperty(database);
-        await user.create(id);
-    }
 }
 
 class Database {
     async init(force = false) {
         this.model = new Model(this.connection);
         await this.model.sync(force);
+        this.isProduction = null;
+    }
+
+    setConnection(connection, isProduction = false) {
+        this.connection = connection;
+        this.isProduction = isProduction;
+    }
+
+    isProductionConnection() {
+        return this.currentType;
     }
 }
 
@@ -44,8 +50,30 @@ const bot = new Bot();
     await bot.init();
     await bot.client.login(token);
 
+    try {
+        if (process.env.NODE_ENV === "production") {
+            database.setConnection(await DatababaseConnectionFactory.getConnection(), true);
+        } else {
+            database.setConnection(await DatababaseConnectionFactory.getDevelopmentConnection());
+        }
+        /* models and database sync happens here */
+        await database.init();
+    } catch(e) {
+        console.log(`Database Connection Error on "${process.env.NODE_ENV}" Environment`);
+        process.exit(1);
+    }
+
+    const scheduler = new Scheduler(database);
+
+    if (bot.client.isReady()) {
+        console.log("Scheduler starting... Client was already ready");
+        await scheduler.start(bot.client);
+    }
+
     bot.client.once(Events.ClientReady, async c => {
         console.log(`Ready! Logged in as ${c.user.tag}`);
+        console.log("Scheduler starting... Client just become ready");
+        await scheduler.bree.start(bot.client);
     });
 
     bot.client.on(Events.InteractionCreate, async interaction => {
@@ -60,14 +88,14 @@ const bot = new Bot();
 
         if (guildId === interaction.guildId) {
             try {
-                database.connection = await DatababaseConnectionFactory.getDevelopmentConnection();
+                database.setConnection(await DatababaseConnectionFactory.getDevelopmentConnection());
             } catch (e) {
                 console.log(e);
                 await interaction.reply("**Development Database Not Connected**", { ephemeral: true });
                 return;
             }
         } else {
-            database.connection = await DatababaseConnectionFactory.getConnection();
+            database.setConnection(await DatababaseConnectionFactory.getConnection());
         } 
         
         await database.init();
@@ -90,4 +118,4 @@ const bot = new Bot();
 
 module.exports = {
     bot, database
-}
+};

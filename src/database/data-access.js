@@ -42,35 +42,6 @@ class DataAccessUser {
     }
 }
 
-class DataAccessUserProperty {
-    constructor(db) {
-        this.db = db;
-    }
-
-    async select(property) {
-        const data = await this.db.model.UserProperty.findAll({
-            where: {
-                [Op.eq]: {
-                    propertyId: property
-                }
-            }
-        });
-
-        if (data === null) {
-            throw new Error("Database Error: Property Missing");
-        }
-        return JSON.parse(data.value);
-    }
-
-    async create(id, property, value) {
-        await this.db.model.UserProperty.create({
-            userId: id,
-            propertyId: property,
-            value: JSON.stringify(value)
-        });
-    }
-}
-
 class DataAccessProperty {
     constructor(db) {
         this.db = db;
@@ -103,8 +74,52 @@ class DataAccessProperty {
     }
 }
 
+class DataAccessSchedule {
+    constructor(db) {
+        this.db = db;
+    }
+
+    async selectAll() {
+        return await this.db.model.Schedule.findAll();
+    }
+
+    async select(id) {
+        return await this.db.model.Schedule.findOne({
+            where: {
+                user_id: id
+            }
+        });
+    }
+
+    async create(id, channelId) {
+        await this.db.model.Schedule.create({ user_id: id, channel_id: channelId});
+    }
+
+    async update(id, channelId) {
+        const date = new Date();
+
+        return await this.db.model.Schedule.update({
+            channelId: channelId,
+            last_praise: date
+        }, {
+            where: {
+                user_id: id
+            }
+        });
+    }
+
+    async delete(id) {
+        return await this.db.model.Schedule.destroy({
+            where: {
+                user_id: id
+            }
+        });
+    }
+}
+
+
 module.exports = {
     DataAccessUser,
-    DataAccessUserProperty,
-    DataAccessProperty
+    DataAccessProperty,
+    DataAccessSchedule
 };
