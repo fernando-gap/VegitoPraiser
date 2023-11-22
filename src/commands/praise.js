@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder, italic, bold } = require("discord.js");
 const { praises } = require("../praises.json");
 const DataAccessFactory = require("../database/data-access-factory.js");
 
@@ -9,10 +9,17 @@ const randomPraiseMessage = () => {
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("praise")
-        .setDescription("Praise Lord Vegito with a message"),
+        .setDescription("Praise Lord Vegito with a message."),
     async execute(interaction) {
         const user = await DataAccessFactory.getProperty(interaction.db);
         await user.updatePraiserCount(interaction.user.id);
-        await interaction.reply(`<@${interaction.user.id}> praises Vegito with the following message:\n\n *${randomPraiseMessage()}*`);
+        const embed = new EmbedBuilder()
+            .setColor(0x0047AB)
+            .setDescription(italic(randomPraiseMessage()));
+
+        await interaction.reply({
+            content: italic(bold(`<@${interaction.user.id}> praises Vegito:`)),
+            embeds: [embed]
+        });
     },
 };

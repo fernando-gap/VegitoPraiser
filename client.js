@@ -110,6 +110,7 @@ const bot = new Bot();
         await user.create(interaction.user.id);
         
         try {
+            interaction.client = bot.client;
             await command.execute(interaction);
         } catch (error) {
             console.error(error);
