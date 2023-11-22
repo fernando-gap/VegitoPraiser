@@ -7,6 +7,7 @@ const randomPraiseMessage = () => {
 };
 
 module.exports = {
+    cooldown: 60 * 60,
     data: new SlashCommandBuilder()
         .setName("praise")
         .setDescription("Praise Lord Vegito with a message."),

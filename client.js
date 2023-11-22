@@ -15,6 +15,7 @@ class Bot {
     async setup() {
         this.client = new Client({ intents: [GatewayIntentBits.Guilds]});
         this.client.commands = new Collection();
+        this.client.cooldowns = new Collection();
 
         readFilesRecursively("../src/commands", (file) => {
             const command = require(file);
@@ -87,6 +88,29 @@ const bot = new Bot();
             return;
         }
 
+        const { cooldowns } = bot.client;
+        if (!cooldowns.has(command.data.name)) {
+            cooldowns.set(command.data.name, new Collection());
+        }
+
+        const now = Date.now();
+        const timestamps = cooldowns.get(command.data.name);
+        const defaultlCooldown = 0; // no cooldown
+        const cooldownAmount = (command.cooldown ?? defaultlCooldown) * 1000;
+
+        if (timestamps.has(interaction.user.id)) {
+            const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
+
+            if (now < expirationTime) {
+                const expiredTimestamp = Math.round(expirationTime / 1000);
+                return interaction.reply({ 
+                    content: `As Vegito hones his strength between battles, embrace this **cooldown** to recharge. Your next praise will be even more powerful.\n\n *In <t:${expiredTimestamp}:R>, unleash the praise and amplify your strength!.*`, ephemeral: true });
+
+            } 
+            timestamps.delete(interaction.user.id);
+        }
+
+        timestamps.set(interaction.user.id, now);
         if (guildId === interaction.guildId) {
             try {
                 database.setConnection(await DatababaseConnectionFactory.getDevelopmentConnection());
