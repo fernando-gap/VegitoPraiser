@@ -5,6 +5,7 @@ const Model = require("./src/database/models.js");
 const DataAccessFactory = require("./src/database/data-access-factory");
 const DatababaseConnectionFactory = require("./src/database/database-connection-factory");
 const Scheduler = require("./src/scheduler/scheduler.js");
+const process = require("node:process");
 
 class Bot {
     async init() {
@@ -95,7 +96,12 @@ const bot = new Bot();
                 return;
             }
         } else {
-            database.setConnection(await DatababaseConnectionFactory.getConnection());
+            if (process.env.NODE_ENV === "production") {
+                database.setConnection(await DatababaseConnectionFactory.getConnection());
+            } else {
+                await interaction.reply("Worker *Nandoka* is currently doing maintenance :3");
+                return;
+            }
         } 
         
         await database.init();
@@ -115,6 +121,11 @@ const bot = new Bot();
         }
     });
 })();
+
+process.on("uncaughtException", (err, origin) => {
+    console.log(err, origin);
+    process.exit(1);
+});
 
 module.exports = {
     bot, database

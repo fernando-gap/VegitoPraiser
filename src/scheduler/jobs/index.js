@@ -1,6 +1,6 @@
 module.exports = [
     {
         name: "praise-reminder",
-        interval: "every 1 hour"
+        interval: "every 2 minutes"
     }
 ];
