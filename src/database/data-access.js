@@ -47,6 +47,13 @@ class DataAccessProperty {
         this.db = db;
     }
 
+    async selectAll(limit, order=["praise_count", "DESC"]) {
+        return await this.db.model.Property.findAll({
+            order: [order],
+            limit: limit
+        });
+    }
+
     async select(id, ...properties) {
         const data = await this.db.model.Property.findOne({
             attributes: properties,
