@@ -1,6 +1,7 @@
 const Bree = require("bree");
 const path = require("path");
 const DataAccessFactory = require("../database/data-access-factory");
+const { EmbedBuilder, bold } = require("@discordjs/builders");
 
 class Scheduler {
     constructor(db) {
@@ -13,34 +14,62 @@ class Scheduler {
     }
 
     async messageHandler(message) {
-        if (message.message === "notify") {
-            await this.executePraiseReminder();
-        }
-    }
-
-    async executePraiseReminder() {
-        const dayInMs = 24 * 60 * 60 * 1000;
         const schedule = await DataAccessFactory.getSchedule(this.db);
         const jobs = await schedule.selectAll();
 
-        for (let i = 0; i < jobs.length; i++) {
-            const job = jobs[i];
-            const currentDate = new Date();
-            currentDate.setSeconds(0, 0);
-            job.last_praise.setSeconds(0, 0);
+        if (message.message === "notify") {
+            for (let i = 0; i < jobs.length; i++) {
+                const job = jobs[i];
 
-            if (currentDate - job.last_praise >= dayInMs) {
-                const channel = this.client.channels.cache.get(job.channel_id);
-                await channel.send(`<@${job.user_id}>, *let your praise resound!* \n\nUnleash your admiration with the mighty command\n* \`/praise\`\nand together, we'll reach new heights of power.\n\n *The more you praise, the stronger we become!*`);
+                if (job.has_hourly_reminder) {
+                    await this.executePraiseReminderHourly(job);
+                } else {
+                    await this.executePraiseReminderDaily(job);
+                }
 
-                /*TODO: you have to update the user date to currentDate so the next day can work */
-                console.log("before: ", job.last_praise);
-                job.last_praise = job.last_praise.setDate(job.last_praise.getDate()+1);
-                console.log("after: ", job.last_praise);
-                job.changed("last_praise", true);
-                await job.save();
             }
+        } 
+    }
+
+    async executePraiseReminderDaily(job) {
+        const dayInMs = 24 * 60 * 60 * 1000;
+        const currentDate = new Date();
+        currentDate.setSeconds(0, 0);
+        job.last_praise.setSeconds(0, 0);
+
+        if (currentDate - job.last_praise >= dayInMs) {
+            await this.sendReminderToChannel(job);
+            job.last_praise = job.last_praise.setDate(job.last_praise.getDate()+1);
+            job.changed("last_praise", true);
+            await job.save();
         }
+    }
+
+    async executePraiseReminderHourly(job) {
+        const hourInMs = 60 * 60 * 1000;
+        const currentDate = new Date();
+        currentDate.setMinutes(0, 0, 0);
+        job.last_praise.setMinutes(0, 0, 0);
+
+        if (currentDate - job.last_praise >= hourInMs) {
+            await this.sendReminderToChannel(job);
+            job.last_praise = job.last_praise.setHours(job.last_praise.getHours()+1);
+            job.changed("last_praise", true);
+            await job.save();
+        }
+    }
+
+    async sendReminderToChannel(job) {
+        const notifyType = job.has_hourly_reminder ? "hourly" : "daily";
+        const embed = new EmbedBuilder()
+            .setColor(0x0047AB)
+            .setDescription("Use `/praise` to unleash the power of Vegito, uniting us in celestial devotion.");
+
+        const channel = this.client.channels.cache.get(job.channel_id);
+        await channel.send({
+            content: `<@${job.user_id}> Your ${bold(notifyType)} reminder is here, let your praise resound!`,
+            embeds: [embed]
+        });
     }
 
     async start(client) {

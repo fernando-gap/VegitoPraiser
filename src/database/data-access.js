@@ -102,12 +102,9 @@ class DataAccessSchedule {
         await this.db.model.Schedule.create({ user_id: id, channel_id: channelId});
     }
 
-    async update(id, channelId) {
-        const date = new Date();
-
+    async update(id, properties) {
         return await this.db.model.Schedule.update({
-            channelId: channelId,
-            last_praise: date
+            ...properties,
         }, {
             where: {
                 user_id: id
@@ -121,6 +118,19 @@ class DataAccessSchedule {
                 user_id: id
             }
         });
+    }
+
+    createManually() {
+        this.temporaryManually = this.db.model.Schedule.build();
+    }
+
+    addManually(column, value) {
+        this.temporaryManually[column] = value;
+    }
+
+    async saveManually() {
+        await this.temporaryManually.save();
+        this.temporaryManually = undefined;
     }
 }
 

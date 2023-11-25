@@ -29,9 +29,9 @@ class Bot {
 }
 
 class Database {
-    async init(force = false) {
+    async init() {
         this.model = new Model(this.connection);
-        await this.model.sync(force);
+        await this.model.sync();
         this.isProduction = null;
     }
 
@@ -61,6 +61,7 @@ const bot = new Bot();
         /* models and database sync happens here */
         await database.init();
     } catch(e) {
+        console.log(e);
         console.log(`Database Connection Error on "${process.env.NODE_ENV}" Environment`);
         process.exit(1);
     }
