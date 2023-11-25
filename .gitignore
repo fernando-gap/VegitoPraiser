@@ -1,6 +1,12 @@
+# discord bot configuration
 config.json
-node_modules
+
+# database configuration for sequelize
+database.js
+
 *.env
-TODO
 *.service
 *.production.yml
+
+node_modules
+TODO

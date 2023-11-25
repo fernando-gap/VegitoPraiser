@@ -1,4 +1,7 @@
 const { DataTypes, DatabaseError } = require("sequelize");
+const User = require("./models/user.js");
+const Property = require("./models/property.js");
+const Schedule = require("./models/schedule.js");
 
 class Model {
     constructor(connection) {
@@ -9,12 +12,7 @@ class Model {
 
     get User() {
         if (this.online()) {
-            return this.driver.define("User", {
-                id: {
-                    type: DataTypes.STRING,
-                    primaryKey: true
-                }
-            });
+            return User(this.driver, DataTypes);
         } else {
             throw new DatabaseError("Database has no active connection");
         }
@@ -22,25 +20,7 @@ class Model {
 
     get Property() {
         if (this.online()) {
-            const p = this.driver.define("Property", {
-                praise_count: {
-                    type: DataTypes.INTEGER,
-                    allowNull: false,
-                    defaultValue: 0
-                }
-            }, {
-                timestamps: false
-            });
-
-            this.User.hasOne(p, {
-                foreignKey: {
-                    name: "user_id",
-                    type: DataTypes.STRING,
-                    unique: "fk_unique_property"
-                }
-            });
-
-            return p;
+            return Property(this.driver, DataTypes);
         } else {
             throw new DatabaseError("Database has no active connection");
         }
@@ -48,28 +28,7 @@ class Model {
 
     get Schedule() {
         if (this.online()) {
-            const s = this.driver.define("Schedule", {
-                channel_id: {
-                    type: DataTypes.STRING,
-                    allowNull: false
-                },
-                last_praise: {
-                    type: DataTypes.DATE,
-                    defaultValue: DataTypes.NOW,
-                    allowNull: false
-                }
-            }, {
-                timestamps: false
-            });
-            this.User.hasOne(s, {
-                foreignKey: {
-                    name: "user_id",
-                    type: DataTypes.STRING,
-                    unique: "fk_unique_schedule"
-                }
-            });
-
-            return s;
+            return Schedule(this.driver, DataTypes);
         } else {
             throw new DatabaseError("Database has no driver connenction");
         }
