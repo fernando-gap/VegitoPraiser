@@ -17,7 +17,7 @@ module.exports = {
             .setDescription("Enable/Disable hourly or daily reminder to praise.")
             .setRequired(true)
         )
-        .setDescription("Get notified once a day to praise Vegito."),
+        .setDescription("Get notified daily or hourly to praise Vegito."),
 
     async execute(interaction) {
         const notifyType = interaction.options.getString("type");
@@ -93,7 +93,6 @@ module.exports = {
         await interaction.reply({
             embeds: [embed]
         });
-    },
-    test: true
+    }
 };
 

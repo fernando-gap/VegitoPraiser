@@ -37,9 +37,11 @@ class Scheduler {
         currentDate.setSeconds(0, 0);
         job.last_praise.setSeconds(0, 0);
 
+        console.log("job: ", job.last_praise, "current: ", currentDate, "subtraction: ", currentDate - job.last_praise, "dayMS: ", dayInMs);
         if (currentDate - job.last_praise >= dayInMs) {
             await this.sendReminderToChannel(job);
-            job.last_praise = job.last_praise.setDate(job.last_praise.getDate()+1);
+            job.last_praise.setYear(currentDate.getFullYear());
+            job.last_praise.setDate(currentDate.getDate());
             job.changed("last_praise", true);
             await job.save();
         }
@@ -48,12 +50,14 @@ class Scheduler {
     async executePraiseReminderHourly(job) {
         const hourInMs = 60 * 60 * 1000;
         const currentDate = new Date();
-        currentDate.setMinutes(0, 0, 0);
-        job.last_praise.setMinutes(0, 0, 0);
+        currentDate.setSeconds(0, 0);
+        job.last_praise.setSeconds(0, 0);
 
         if (currentDate - job.last_praise >= hourInMs) {
             await this.sendReminderToChannel(job);
-            job.last_praise = job.last_praise.setHours(job.last_praise.getHours()+1);
+            job.last_praise.setYear(currentDate.getFullYear());
+            job.last_praise.setDate(currentDate.getDate());
+            job.last_praise.setHours(job.last_praise.getHours()+1);
             job.changed("last_praise", true);
             await job.save();
         }
