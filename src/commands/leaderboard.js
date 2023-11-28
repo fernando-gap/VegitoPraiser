@@ -8,7 +8,7 @@ module.exports = {
     async execute(interaction) {
         let str = "";
         const embed = new EmbedBuilder()
-            .setColor(0x0047AB)
+            .setColor(interaction.bot.config.colors.apricot)
             .setTitle("Praise Leaderboard");
 
         const prop = await DataAccessFactory.getProperty(interaction.db);

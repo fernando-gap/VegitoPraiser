@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, italic, bold } = require("discord.js");
-const { praises } = require("../praises.json");
+const { praises } = require("../config/praises.json");
 const DataAccessFactory = require("../database/data-access-factory.js");
 
 const randomPraiseMessage = () => {
@@ -15,7 +15,7 @@ module.exports = {
         const user = await DataAccessFactory.getProperty(interaction.db);
         await user.updatePraiserCount(interaction.user.id);
         const embed = new EmbedBuilder()
-            .setColor(0x0047AB)
+            .setColor(interaction.bot.config.colors.cerulean)
             .setDescription(italic(randomPraiseMessage()));
 
         await interaction.reply({

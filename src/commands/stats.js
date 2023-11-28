@@ -8,9 +8,8 @@ module.exports = {
     async execute(interaction) {
         const user = await DataAccessFactory.getProperty(interaction.db);
         const value = await user.select(interaction.user.id, "praise_count");
-        console.log(interaction.user.displayAvatarURL());
         const embed = new EmbedBuilder()
-            .setColor(0x0047AB)
+            .setColor(interaction.bot.config.colors.cerulean)
             .setDescription(
                 bold(`<@${interaction.user.id}> Statistics\n\n`)
                 + "Total Praises: " + value.praise_count.toString() + "\n"

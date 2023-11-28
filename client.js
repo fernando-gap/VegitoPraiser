@@ -9,10 +9,12 @@ const process = require("node:process");
 
 class Bot {
     async init() {
-        await this.setup();
+        await this.setupClient();
+        await this.setupConfiguration();
+        console.log(this.config);
     }
 
-    async setup() {
+    async setupClient() {
         this.client = new Client({ intents: [GatewayIntentBits.Guilds]});
         this.client.commands = new Collection();
         this.client.cooldowns = new Collection();
@@ -26,22 +28,22 @@ class Bot {
             }
         });
     }
+    async setupConfiguration() {
+        this.config = {
+            colors: require("./src/config/colors.js"),
+            commands: await require("./src/config/commands.js")()
+        };
+    }
 }
 
 class Database {
     async init() {
         this.model = new Model(this.connection);
         await this.model.sync();
-        this.isProduction = null;
     }
 
-    setConnection(connection, isProduction = false) {
+    setConnection(connection) {
         this.connection = connection;
-        this.isProduction = isProduction;
-    }
-
-    isProductionConnection() {
-        return this.currentType;
     }
 }
 
@@ -52,9 +54,13 @@ const bot = new Bot();
     await bot.init();
     await bot.client.login(token);
 
+    /*
+    * Create connection to database dev or prod. 
+    */
+
     try {
         if (process.env.NODE_ENV === "production") {
-            database.setConnection(await DatababaseConnectionFactory.getConnection(), true);
+            database.setConnection(await DatababaseConnectionFactory.getConnection());
         } else {
             database.setConnection(await DatababaseConnectionFactory.getDevelopmentConnection());
         }
@@ -66,18 +72,28 @@ const bot = new Bot();
         process.exit(1);
     }
 
+    /*
+    * Start Scheduler when it already exists or
+    * wait for bot to login.
+    */
+
     const scheduler = new Scheduler(database);
 
     if (bot.client.isReady()) {
         console.log("Scheduler starting... Client was already ready");
-        await scheduler.start(bot.client);
+        await scheduler.start(bot);
     }
+
 
     bot.client.once(Events.ClientReady, async c => {
         console.log(`Ready! Logged in as ${c.user.tag}`);
         console.log("Scheduler starting... Client just become ready");
-        await scheduler.bree.start(bot.client);
+        await scheduler.bree.start(bot);
     });
+
+    /*
+    * Executes on a slash command
+    */
 
     bot.client.on(Events.InteractionCreate, async interaction => {
         if (!interaction.isChatInputCommand()) return;
@@ -88,6 +104,10 @@ const bot = new Bot();
             console.error(`No command matching ${interaction.commandName} was found.`);
             return;
         }
+
+        /*
+        * Cooldown
+        */
 
         const { cooldowns } = bot.client;
         if (!cooldowns.has(command.data.name)) {
@@ -105,13 +125,18 @@ const bot = new Bot();
             if (now < expirationTime) {
                 const expiredTimestamp = Math.round(expirationTime / 1000);
                 return interaction.reply({ 
-                    content: `As Vegito hones his strength between battles, embrace this **cooldown** to recharge. Your next praise will be even more powerful.\n\n *In <t:${expiredTimestamp}:R>, unleash the praise and amplify your strength!.*`, ephemeral: true });
+                    content: `As Vegito hones his strength between battles, embrace this **cooldown** to recharge. Your next praise will be even more powerful.\n\n *<t:${expiredTimestamp}:R>, unleash the praise and amplify your strength!*`, ephemeral: true });
 
             } 
             timestamps.delete(interaction.user.id);
         }
 
         timestamps.set(interaction.user.id, now);
+
+        /*
+        * Development Server
+        */
+
         if (guildId === interaction.guildId) {
             try {
                 database.setConnection(await DatababaseConnectionFactory.getDevelopmentConnection());
@@ -131,11 +156,17 @@ const bot = new Bot();
         
         await database.init();
         interaction.db = database;
-        const user = await DataAccessFactory.getUser(interaction.db);
-        await user.create(interaction.user.id);
-        
+        interaction.bot = bot;
+
         try {
-            interaction.client = bot.client;
+
+            /*
+            * Ensure the user exists
+            */ 
+
+            const user = await DataAccessFactory.getUser(interaction.db);
+            await user.create(interaction.user.id);
+
             await command.execute(interaction);
         } catch (error) {
             console.error(error);

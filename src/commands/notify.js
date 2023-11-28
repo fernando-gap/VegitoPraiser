@@ -25,7 +25,7 @@ module.exports = {
             ? `<t:${Math.round((Date.now() + 3600 * 1000)/1000)}:R>`
             : `<t:${Math.round((Date.now() + 24 * 60 * 60 * 1000)/1000)}:R>`;
         const isEnabled = interaction.options.getBoolean("enable");
-        const embed = new EmbedBuilder().setColor(0x0047AB);
+        const embed = new EmbedBuilder().setColor(interaction.bot.config.colors.apricot);
         const schedule = await DataAccessFactory.getSchedule(interaction.db);
         let str = `<@${interaction.user.id}> You ${isEnabled ? bold("enabled") : bold("disabled")} ${bold(notifyType)} notifications!`;
         let strEnd = `\n\n${numberType} you'll get pinged to praise Vegito!!!\n`;

@@ -37,7 +37,6 @@ class Scheduler {
         currentDate.setSeconds(0, 0);
         job.last_praise.setSeconds(0, 0);
 
-        console.log("job: ", job.last_praise, "current: ", currentDate, "subtraction: ", currentDate - job.last_praise, "dayMS: ", dayInMs);
         if (currentDate - job.last_praise >= dayInMs) {
             await this.sendReminderToChannel(job);
             job.last_praise.setYear(currentDate.getFullYear());
@@ -57,7 +56,7 @@ class Scheduler {
             await this.sendReminderToChannel(job);
             job.last_praise.setYear(currentDate.getFullYear());
             job.last_praise.setDate(currentDate.getDate());
-            job.last_praise.setHours(job.last_praise.getHours()+1);
+            job.last_praise.setHours(currentDate.getHours());
             job.changed("last_praise", true);
             await job.save();
         }
@@ -65,19 +64,21 @@ class Scheduler {
 
     async sendReminderToChannel(job) {
         const notifyType = job.has_hourly_reminder ? "hourly" : "daily";
-        const embed = new EmbedBuilder()
-            .setColor(0x0047AB)
-            .setDescription("Use `/praise` to unleash the power of Vegito, uniting us in celestial devotion.");
+        const { praise } = this.bot.config.commands;
 
-        const channel = this.client.channels.cache.get(job.channel_id);
+        const embed = new EmbedBuilder()
+            .setColor(this.bot.config.colors.cerulean)
+            .setDescription(`Use </${praise.name}:${praise.id}> to unleash the power of Vegito, uniting us in celestial devotion.`);
+
+        const channel = this.bot.client.channels.cache.get(job.channel_id);
         await channel.send({
             content: `<@${job.user_id}> Your ${bold(notifyType)} reminder is here, let your praise resound!`,
             embeds: [embed]
         });
     }
 
-    async start(client) {
-        this.client = client;
+    async start(bot) {
+        this.bot = bot;
         await this.bree.start();
     }
 }
