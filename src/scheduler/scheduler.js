@@ -40,6 +40,7 @@ class Scheduler {
         if (currentDate - job.last_praise >= dayInMs) {
             await this.sendReminderToChannel(job);
             job.last_praise.setYear(currentDate.getFullYear());
+            job.last_praise.setMonth(currentDate.getMonth());
             job.last_praise.setDate(currentDate.getDate());
             job.changed("last_praise", true);
             await job.save();
@@ -56,6 +57,7 @@ class Scheduler {
             await this.sendReminderToChannel(job);
             job.last_praise.setYear(currentDate.getFullYear());
             job.last_praise.setDate(currentDate.getDate());
+            job.last_praise.setMonth(currentDate.getMonth());
             job.last_praise.setHours(currentDate.getHours());
             job.changed("last_praise", true);
             await job.save();
