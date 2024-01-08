@@ -1,24 +1,18 @@
-const { Op } = require("sequelize");
-
 class DataAccessUser {
     constructor(db) {
         this.db = db;
     }
 
-    async select(id, property) {
-        const data = await this.db.model.UserProperty.findOne({
+    async select(id) {
+        return await this.db.model.User.findOne({ where:  { id: id }});
+    }
+
+    async update(id, property, value) {
+        await this.db.model.User.update({ [property]: value }, {
             where: {
-                [Op.and]: [
-                    { userId: id },
-                    {propertyId: property }
-                ]
+                id: id
             }
         });
-
-        if (data === null) {
-            throw new Error("User or Property Must Exist");
-        }
-        return JSON.parse(data.value);
     }
 
     async create(id) {
@@ -30,16 +24,6 @@ class DataAccessUser {
         }
     }
 
-    async update(id, property, value) {
-        await this.db.model.UserProperty.update({ value: JSON.stringify(value)}, {
-            where: {
-                [Op.and]: [
-                    { userId: id },
-                    { propertyId: property }
-                ]
-            }
-        });
-    }
 }
 
 class DataAccessProperty {

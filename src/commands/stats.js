@@ -13,7 +13,7 @@ module.exports = {
             .setDescription(
                 bold(`<@${interaction.user.id}> Statistics\n\n`)
                 + "Total Praises: " + value.praise_count.toString() + "\n"
-                + "Praiser Points: " +value.praise_count.toString()
+                + value.praise_count.toString() + "<:potaraearrings:1193378255407951982>"
             )
             .setThumbnail(interaction.user.displayAvatarURL());
 

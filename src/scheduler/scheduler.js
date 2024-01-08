@@ -1,87 +1,52 @@
-const Bree = require("bree");
 const path = require("path");
-const DataAccessFactory = require("../database/data-access-factory");
-const { EmbedBuilder, bold } = require("@discordjs/builders");
+const fs = require("fs");
+const { Agenda } = require("@hokify/agenda");
 
 class Scheduler {
-    constructor(db) {
-        this.db = db;
-        this.bree = new Bree({
-            root: path.join(__dirname, "jobs"),
-            /* asynchrounous function not being awaited, is it needed? */
-            workerMessageHandler: (a, b) => {this.messageHandler(a, b);}
-        });
-    }
-
-    async messageHandler(message) {
-        const schedule = await DataAccessFactory.getSchedule(this.db);
-        const jobs = await schedule.selectAll();
-
-        if (message.message === "notify") {
-            for (let i = 0; i < jobs.length; i++) {
-                const job = jobs[i];
-
-                if (job.has_hourly_reminder) {
-                    await this.executePraiseReminderHourly(job);
-                } else {
-                    await this.executePraiseReminderDaily(job);
-                }
-
-            }
-        } 
-    }
-
-    async executePraiseReminderDaily(job) {
-        const dayInMs = 24 * 60 * 60 * 1000;
-        const currentDate = new Date();
-        currentDate.setSeconds(0, 0);
-        job.last_praise.setSeconds(0, 0);
-
-        if (currentDate - job.last_praise >= dayInMs) {
-            await this.sendReminderToChannel(job);
-            job.last_praise.setYear(currentDate.getFullYear());
-            job.last_praise.setMonth(currentDate.getMonth());
-            job.last_praise.setDate(currentDate.getDate());
-            job.changed("last_praise", true);
-            await job.save();
+    constructor(bot) {
+        let config = {};
+        if (process.env.NODE_ENV === "production") {
+            config = require("dotenv").parse(fs.readFileSync(path.resolve(__dirname, "../../db_scheduler_prod.env")));
+        } else {
+            config = require("dotenv").parse(fs.readFileSync(path.resolve(__dirname, "../../db_scheduler_dev.env")));
         }
-    }
 
-    async executePraiseReminderHourly(job) {
-        const hourInMs = 60 * 60 * 1000;
-        const currentDate = new Date();
-        currentDate.setSeconds(0, 0);
-        job.last_praise.setSeconds(0, 0);
-
-        if (currentDate - job.last_praise >= hourInMs) {
-            await this.sendReminderToChannel(job);
-            job.last_praise.setYear(currentDate.getFullYear());
-            job.last_praise.setDate(currentDate.getDate());
-            job.last_praise.setMonth(currentDate.getMonth());
-            job.last_praise.setHours(currentDate.getHours());
-            job.changed("last_praise", true);
-            await job.save();
-        }
-    }
-
-    async sendReminderToChannel(job) {
-        const notifyType = job.has_hourly_reminder ? "hourly" : "daily";
-        const { praise } = this.bot.config.commands;
-
-        const embed = new EmbedBuilder()
-            .setColor(this.bot.config.colors.cerulean)
-            .setDescription(`Use </${praise.name}:${praise.id}> to unleash the power of Vegito, uniting us in celestial devotion.`);
-
-        const channel = this.bot.client.channels.cache.get(job.channel_id);
-        await channel.send({
-            content: `<@${job.user_id}> Your ${bold(notifyType)} reminder is here, let your praise resound!`,
-            embeds: [embed]
-        });
-    }
-
-    async start(bot) {
         this.bot = bot;
-        await this.bree.start();
+        this.jobs = new Map();
+        const mongoURL = `mongodb://${config.MONGO_INITDB_ROOT_USERNAME}:${config.MONGO_INITDB_ROOT_PASSWORD}@${config.MONGO_DB_HOST}:${config.MONGO_DB_PORT}/${config.MONGO_DB_AUTH_DATABASE}`;
+        console.log(mongoURL);
+        this.drive = new Agenda({ db: { address: mongoURL }, ensureIndex: true });
+    }
+
+    add(job) {
+        job.define(this.drive, this.bot);
+        this.jobs.set(job.name, job);
+    }
+
+    async create(name, data) {
+        const job = this.jobs.get(name);
+        const jobInstance = this.drive.create(name, data);
+        await job.exec(jobInstance);
+    }
+
+    async reschedule(name, data) {
+        const job = this.jobs.get(name);
+        const oldJob = await this.drive.jobs({ name: name, "data.user_id": data.user_id});
+        await job.reschedule(oldJob[0], data);
+    }
+
+    async delete(name, data) {
+        const jobInstance = await this.drive.jobs({ name: name, "data.user_id": data.user_id});
+        console.log(jobInstance[0]);
+        await jobInstance[0].remove();
+    }
+
+    async start() {
+        this.drive.on("fail", (err, job) => {
+            console.log(err, job);
+        });
+
+        await this.drive.start();
     }
 }
 

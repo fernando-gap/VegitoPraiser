@@ -6,12 +6,12 @@ const DataAccessFactory = require("./src/database/data-access-factory");
 const DatababaseConnectionFactory = require("./src/database/database-connection-factory");
 const Scheduler = require("./src/scheduler/scheduler.js");
 const process = require("node:process");
+const { HourlyReminderPraiseJob, DailyReminderPraiseJob } = require("./src/scheduler/jobs.js");
 
 class Bot {
     async init() {
         await this.setupClient();
         await this.setupConfiguration();
-        console.log(this.config);
     }
 
     async setupClient() {
@@ -77,18 +77,13 @@ const bot = new Bot();
     * wait for bot to login.
     */
 
-    const scheduler = new Scheduler(database);
-
-    if (bot.client.isReady()) {
-        console.log("Scheduler starting... Client was already ready");
-        await scheduler.start(bot);
-    }
-
+    const scheduler = new Scheduler(bot);
+    scheduler.add(new HourlyReminderPraiseJob("hourly_reminder_praise"));
+    scheduler.add(new DailyReminderPraiseJob("daily_reminder_praise"));
+    await scheduler.start();
 
     bot.client.once(Events.ClientReady, async c => {
         console.log(`Ready! Logged in as ${c.user.tag}`);
-        console.log("Scheduler starting... Client just become ready");
-        await scheduler.bree.start(bot);
     });
 
     /*
@@ -157,6 +152,7 @@ const bot = new Bot();
         await database.init();
         interaction.db = database;
         interaction.bot = bot;
+        interaction.scheduler = scheduler;
 
         try {
 

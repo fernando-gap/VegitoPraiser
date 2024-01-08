@@ -12,8 +12,6 @@ module.exports = {
         .setName("praise")
         .setDescription("Praise Lord Vegito with a message."),
     async execute(interaction) {
-        const user = await DataAccessFactory.getProperty(interaction.db);
-        await user.updatePraiserCount(interaction.user.id);
         const embed = new EmbedBuilder()
             .setColor(interaction.bot.config.colors.cerulean)
             .setDescription(italic(randomPraiseMessage()));
@@ -22,5 +20,15 @@ module.exports = {
             content: italic(bold(`<@${interaction.user.id}> praises Vegito:`)),
             embeds: [embed]
         });
+
+        const userPropertyDAO = await DataAccessFactory.getProperty(interaction.db);
+        const userDAO = await DataAccessFactory.getUser(interaction.db);
+        await userPropertyDAO.updatePraiserCount(interaction.user.id);
+
+        const user = await userDAO.select(interaction.user.id);
+
+        if (user.has_hourly_reminder) {
+            await interaction.scheduler.reschedule("hourly_reminder_praise", { user_id: interaction.user.id });
+        }
     },
 };

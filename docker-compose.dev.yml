@@ -10,6 +10,19 @@ services:
       - db_dev.env
     restart: on-failure
     volumes:
-      - data_dev:/var/lib/mysql
+      - vegitopraiser_data_dev:/var/lib/mysql
+  db_scheduler_dev:
+    image: mongo
+    restart: on-failure
+    env_file:
+      - db_scheduler_dev.env
+    ports:
+      - 27018:27017
+
 volumes:
-  data_dev:
+  vegitopraiser_data_dev:
+    external: true
+
+networks:
+  vegitopraiser_dev:
+    driver: brigde

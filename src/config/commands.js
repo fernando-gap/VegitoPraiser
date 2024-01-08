@@ -6,7 +6,6 @@ const rest = new REST().setToken(token);
 module.exports = async () => {
     const commands = {};
     const botcommands = await rest.get(Routes.applicationCommands(clientId));
-    console.log(botcommands);
     for (const cmd of botcommands) {
         const {
             name, 
