@@ -26,13 +26,15 @@ class Scheduler {
     async create(name, data) {
         const job = this.jobs.get(name);
         const jobInstance = this.drive.create(name, data);
+        console.log(this.jobs, job, jobInstance);
         await job.exec(jobInstance);
     }
 
-    async reschedule(name, data) {
+    async reschedule(name, newData) {
         const job = this.jobs.get(name);
-        const oldJob = await this.drive.jobs({ name: name, "data.user_id": data.user_id});
-        await job.reschedule(oldJob[0], data);
+        const oldJob = await this.drive.jobs({ name: name, "data.user_id": newData.user_id});
+        console.log({ ...oldJob[0].attrs.data, ...newData});
+        await job.reschedule(oldJob[0], { ...oldJob[0].attrs.data, ...newData});
     }
 
     async delete(name, data) {

@@ -1,6 +1,12 @@
 const { EmbedBuilder, bold } = require("@discordjs/builders");
 
-class HourlyReminderPraiseJob {
+class Job {
+    constructor(name) {
+        this.name = name;
+    }
+}
+
+class HourlyReminderPraiseJob extends Job {
     define(drive, bot) {
         this.drive = drive;
         this.bot = bot;
@@ -28,16 +34,13 @@ class HourlyReminderPraiseJob {
     }
 
     async reschedule(job, data) {
-        // ensures that the user_id is the same as the old job
-        data.user_id = job.attrs.data.user_id; 
-
         await job.remove();
         const rescheduleJob = this.drive.create(this.name, data);
         this.exec(rescheduleJob);
     }
 }
 
-class DailyReminderPraiseJob {
+class DailyReminderPraiseJob extends Job {
     define(drive, bot) {
         this.drive = drive;
         this.bot = bot;
@@ -64,9 +67,6 @@ class DailyReminderPraiseJob {
     }
 
     async reschedule(job, data) {
-        // ensures that the user_id is the same as the old job
-        data.user_id = job.attrs.data.user_id; 
-
         await job.remove();
         const rescheduleJob = this.drive.create(this.name, data);
         this.exec(rescheduleJob);

@@ -28,7 +28,10 @@ module.exports = {
         const user = await userDAO.select(interaction.user.id);
 
         if (user.has_hourly_reminder) {
-            await interaction.scheduler.reschedule("hourly_reminder_praise", { user_id: interaction.user.id });
+            await interaction.scheduler.reschedule("hourly_reminder_praise", { 
+                user_id: interaction.user.id,
+                channel_id: interaction.channel.id
+            });
         }
     },
 };

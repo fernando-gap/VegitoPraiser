@@ -30,7 +30,6 @@ module.exports = {
             ? `<t:${Math.round((Date.now() + 3600 * 1000)/1000)}:R>`
             : `<t:${Math.round((Date.now() + 24 * 60 * 60 * 1000)/1000)}:R>`;
 
-        console.log("TYPE,", notifyType);
         if (notifyType === "hourly") {
             if (isEnabled) {
                 let content = "";
