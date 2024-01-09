@@ -73,7 +73,52 @@ class DailyReminderPraiseJob extends Job {
     }
 }
 
+class CooldownJob extends Job {
+    define(drive, bot) {
+        this.drive = drive;
+        this.bot = bot;
+
+        this.drive.define(this.name, async job => {
+            await job.remove();
+        });
+    }
+
+    async exec(job) {
+        job.schedule("in 1 hour");
+        job.unique({"data.user_id": job.attrs.data.user_id});
+        job.priority("high");
+        await job.save();
+    }
+}
+
+/*
+ * These are very specific made jobs.
+ * It is not necessarily part of Vegito's core code.
+ */
+
+class FortnightReminderJob extends Job {
+    define(drive, bot) {
+        this.drive = drive;
+        this.bot = bot;
+
+        this.drive.define(this.name, async job => {
+            const { channel_id } = job.attrs.data;
+            const channel = this.bot.client.channels.cache.get(channel_id);
+            console.log(channel);
+            await channel.send({
+                content: "@everyone Our lord and savior vegito saved them from satan.",
+            });
+        });
+    }
+
+    exec(data) {
+        this.drive.every("14 days", this.name, data);
+    }
+}
+
 module.exports = {
     HourlyReminderPraiseJob,
-    DailyReminderPraiseJob
+    DailyReminderPraiseJob,
+    FortnightReminderJob,
+    CooldownJob
 };

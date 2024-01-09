@@ -1,12 +1,12 @@
 const { Client, Events, Collection, GatewayIntentBits } = require("discord.js");
-const { token, guildId } = require("./config.json");
+const { token, guildId, guild_channels } = require("./config.json");
 const readFilesRecursively = require("./util/recursive-read-files.js");
 const Model = require("./src/database/models.js");
 const DataAccessFactory = require("./src/database/data-access-factory");
 const DatababaseConnectionFactory = require("./src/database/database-connection-factory");
 const Scheduler = require("./src/scheduler/scheduler.js");
 const process = require("node:process");
-const { HourlyReminderPraiseJob, DailyReminderPraiseJob } = require("./src/scheduler/jobs.js");
+const { HourlyReminderPraiseJob, DailyReminderPraiseJob, FortnightReminderJob, CooldownJob } = require("./src/scheduler/jobs.js");
 
 class Bot {
     async init() {
@@ -78,8 +78,14 @@ const bot = new Bot();
     */
 
     const scheduler = new Scheduler(bot);
+    /* job that have many instances */
     scheduler.add(new HourlyReminderPraiseJob("hourly_reminder_praise"));
     scheduler.add(new DailyReminderPraiseJob("daily_reminder_praise"));
+    scheduler.add(new CooldownJob("cooldown"));
+
+    /* jobs that are single */
+    scheduler.add(new FortnightReminderJob("fortnight_everynone_reminder"));
+    await scheduler.createSingle("fortnight_everynone_reminder", { channel_id: guild_channels[guildId] });
     await scheduler.start();
 
     bot.client.once(Events.ClientReady, async c => {
@@ -103,6 +109,12 @@ const bot = new Bot();
         /*
         * Cooldown
         */
+
+        // let userCooldown = await scheduler.jobs({ name: "cooldown", "data.user_id": interaction.user.id })
+
+        // if (userCooldown.length >= 1) {
+        //     const user = userCooldown[0];
+        // }
 
         const { cooldowns } = bot.client;
         if (!cooldowns.has(command.data.name)) {
