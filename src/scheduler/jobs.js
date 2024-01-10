@@ -84,9 +84,9 @@ class CooldownJob extends Job {
     }
 
     async exec(job) {
-        job.schedule("in 1 hour");
-        job.unique({"data.user_id": job.attrs.data.user_id});
+        job.unique({"data.user_id": job.attrs.data.user_id, "data.commandName": job.attrs.data.commandName});
         job.priority("high");
+        job.schedule(new Date(job.attrs.data.endDate));
         await job.save();
     }
 }

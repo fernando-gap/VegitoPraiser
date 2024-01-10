@@ -118,36 +118,30 @@ const bot = new Bot();
         /*
         * Cooldown
         */
+        const userCooldown = await scheduler.drive.jobs({ 
+            name: "cooldown", 
+            "data.user_id": interaction.user.id, 
+            "data.commandName": command.data.name 
+        });
 
-        // let userCooldown = await scheduler.jobs({ name: "cooldown", "data.user_id": interaction.user.id })
-
-        // if (userCooldown.length >= 1) {
-        //     const user = userCooldown[0];
-        // }
-
-        const { cooldowns } = bot.client;
-        if (!cooldowns.has(command.data.name)) {
-            cooldowns.set(command.data.name, new Collection());
-        }
-
-        const now = Date.now();
-        const timestamps = cooldowns.get(command.data.name);
         const defaultlCooldown = 0; // no cooldown
-        const cooldownAmount = (command.cooldown ?? defaultlCooldown) * 1000;
 
-        if (timestamps.has(interaction.user.id)) {
-            const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
+        if (userCooldown.length >= 1) {
+            const user = userCooldown[0];
+            const expiredTimestamp = Math.round(user.attrs.data.endDate / 1000);
+            return interaction.reply({ 
+                content: `As Vegito hones his strength between battles, embrace this **cooldown** to recharge. Your next praise will be even more powerful.\n\n *<t:${expiredTimestamp}:R>, unleash the praise and amplify your strength!*`, ephemeral: true });
+        } else {
+            const cooldownAmount = (command.cooldown ?? defaultlCooldown) * 1000;
 
-            if (now < expirationTime) {
-                const expiredTimestamp = Math.round(expirationTime / 1000);
-                return interaction.reply({ 
-                    content: `As Vegito hones his strength between battles, embrace this **cooldown** to recharge. Your next praise will be even more powerful.\n\n *<t:${expiredTimestamp}:R>, unleash the praise and amplify your strength!*`, ephemeral: true });
-
-            } 
-            timestamps.delete(interaction.user.id);
+            if (cooldownAmount > 0) {
+                await scheduler.create("cooldown", { 
+                    user_id: interaction.user.id,
+                    commandName: command.data.name,
+                    endDate: Date.now() + cooldownAmount
+                });
+            }
         }
-
-        timestamps.set(interaction.user.id, now);
 
         /*
         * Development Server
