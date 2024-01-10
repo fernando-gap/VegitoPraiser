@@ -104,7 +104,6 @@ class FortnightReminderJob extends Job {
         this.drive.define(this.name, async job => {
             const { channel_id } = job.attrs.data;
             const channel = this.bot.client.channels.cache.get(channel_id);
-            console.log(channel);
             await channel.send({
                 content: "@everyone Our lord and savior vegito saved them from satan.",
             });

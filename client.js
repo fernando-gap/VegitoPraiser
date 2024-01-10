@@ -85,7 +85,16 @@ const bot = new Bot();
 
     /* jobs that are single */
     scheduler.add(new FortnightReminderJob("fortnight_everynone_reminder"));
-    await scheduler.createSingle("fortnight_everynone_reminder", { channel_id: guild_channels[guildId] });
+
+    /* 
+    * jobs that shouldn't run or be created in 
+    * development because they affect other servers even in development mode.
+    */
+
+    if (process.env.NODE_ENV === "production") {
+        scheduler.createSingle("fortnight_everynone_reminder", { channel_id: guild_channels[guildId] });
+    }
+
     await scheduler.start();
 
     bot.client.once(Events.ClientReady, async c => {
