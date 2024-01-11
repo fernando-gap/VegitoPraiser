@@ -1,4 +1,5 @@
-const { EmbedBuilder, bold } = require("@discordjs/builders");
+import { EmbedBuilder, bold } from "@discordjs/builders";
+import bot from "../bot.js";
 
 class Job {
     constructor(name) {
@@ -6,20 +7,19 @@ class Job {
     }
 }
 
-class HourlyReminderPraiseJob extends Job {
-    define(drive, bot) {
+export class HourlyReminderPraiseJob extends Job {
+    define(drive) {
         this.drive = drive;
-        this.bot = bot;
 
         this.drive.define(this.name, async job => {
             const { user_id, channel_id } = job.attrs.data;
-            const { praise } = this.bot.config.commands;
+            const { praise } = bot.config.commands;
 
             const embed = new EmbedBuilder()
-                .setColor(this.bot.config.colors.cerulean)
+                .setColor(bot.config.colors.cerulean)
                 .setDescription(`Use </${praise.name}:${praise.id}> to unleash the power of Vegito, uniting us in celestial devotion.`);
 
-            const channel = this.bot.client.channels.cache.get(channel_id);
+            const channel = bot.client.channels.cache.get(channel_id);
             await channel.send({
                 content: `<@${user_id}> Your ${bold("hourly")} reminder is here, let your praise resound!`,
                 embeds: [embed]
@@ -40,20 +40,19 @@ class HourlyReminderPraiseJob extends Job {
     }
 }
 
-class DailyReminderPraiseJob extends Job {
-    define(drive, bot) {
+export class DailyReminderPraiseJob extends Job {
+    define(drive) {
         this.drive = drive;
-        this.bot = bot;
 
         this.drive.define(this.name, async job => {
             const { user_id, channel_id }= job.attrs.data;
-            const { praise } = this.bot.config.commands;
+            const { praise } = bot.config.commands;
 
             const embed = new EmbedBuilder()
-                .setColor(this.bot.config.colors.cerulean)
+                .setColor(bot.config.colors.cerulean)
                 .setDescription(`Use </${praise.name}:${praise.id}> to unleash the power of Vegito, uniting us in celestial devotion.`);
 
-            const channel = this.bot.client.channels.cache.get(channel_id);
+            const channel = bot.client.channels.cache.get(channel_id);
             await channel.send({
                 content: `<@${user_id}> Your ${bold("daily")} reminder is here, let your praise resound!`,
                 embeds: [embed]
@@ -73,10 +72,9 @@ class DailyReminderPraiseJob extends Job {
     }
 }
 
-class CooldownJob extends Job {
-    define(drive, bot) {
+export class CooldownJob extends Job {
+    define(drive) {
         this.drive = drive;
-        this.bot = bot;
 
         this.drive.define(this.name, async job => {
             await job.remove();
@@ -96,14 +94,13 @@ class CooldownJob extends Job {
  * It is not necessarily part of Vegito's core code.
  */
 
-class FortnightReminderJob extends Job {
-    define(drive, bot) {
+export class FortnightReminderJob extends Job {
+    define(drive) {
         this.drive = drive;
-        this.bot = bot;
 
         this.drive.define(this.name, async job => {
             const { channel_id } = job.attrs.data;
-            const channel = this.bot.client.channels.cache.get(channel_id);
+            const channel = bot.client.channels.cache.get(channel_id);
             await channel.send({
                 content: "@everyone Our lord and savior vegito saved them from satan.",
             });
@@ -114,10 +111,3 @@ class FortnightReminderJob extends Job {
         this.drive.every("14 days", this.name, data);
     }
 }
-
-module.exports = {
-    HourlyReminderPraiseJob,
-    DailyReminderPraiseJob,
-    FortnightReminderJob,
-    CooldownJob
-};

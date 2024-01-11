@@ -1,6 +1,6 @@
-const User = require("./user.js");
+import User from "./user.js";
 
-module.exports = (driver, DataTypes) => {
+export default (driver, DataTypes) => {
     const modelProperty = driver.define("Property", {
         praise_count: {
             type: DataTypes.INTEGER,

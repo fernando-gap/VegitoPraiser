@@ -1,4 +1,4 @@
-module.exports = (driver, DataTypes) => {
+export default (driver, DataTypes) => {
     return driver.define("User", {
         id: {
             type: DataTypes.STRING,

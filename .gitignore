@@ -1,7 +1,9 @@
 # discord bot configuration
-config.json
+src/**/*/config.js
+src/**/*/config.json
 
 # database configuration for sequelize
+database-sequelize-migrations-config.js
 database.js
 
 *.env

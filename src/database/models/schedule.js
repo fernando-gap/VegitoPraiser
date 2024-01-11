@@ -1,6 +1,6 @@
-const User = require("./user.js");
+import User from "./user.js";
 
-module.exports = (driver, DataTypes) => {
+export default (driver, DataTypes) => {
     const modelSchedule = driver.define("Schedule", {
         /* what channel the user enabled the notification system */
         channel_id: {

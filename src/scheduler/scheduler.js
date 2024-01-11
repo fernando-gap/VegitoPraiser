@@ -1,24 +1,24 @@
-const path = require("path");
-const fs = require("fs");
-const { Agenda } = require("@hokify/agenda");
+import { resolve } from "path";
+import { readFileSync } from "fs";
+import { Agenda } from "@hokify/agenda";
+import dotenv from "dotenv";
 
-class Scheduler {
-    constructor(bot) {
+export default class Scheduler {
+    constructor() {
         let config = {};
         if (process.env.NODE_ENV === "production") {
-            config = require("dotenv").parse(fs.readFileSync(path.resolve(__dirname, "../../db_scheduler_prod.env")));
+            config = dotenv.parse(readFileSync(resolve(import.meta.dirname, "../../db_scheduler_prod.env")));
         } else {
-            config = require("dotenv").parse(fs.readFileSync(path.resolve(__dirname, "../../db_scheduler_dev.env")));
+            config = dotenv.parse(readFileSync(resolve(import.meta.dirname, "../../db_scheduler_dev.env")));
         }
 
-        this.bot = bot;
         this.jobs = new Map();
         const mongoURL = `mongodb://${config.MONGO_INITDB_ROOT_USERNAME}:${config.MONGO_INITDB_ROOT_PASSWORD}@${config.MONGO_DB_HOST}:${config.MONGO_DB_PORT}/${config.MONGO_DB_AUTH_DATABASE}`;
         this.drive = new Agenda({ db: { address: mongoURL }, ensureIndex: true });
     }
 
     add(job) {
-        job.define(this.drive, this.bot);
+        job.define(this.drive);
         this.jobs.set(job.name, job);
     }
 
@@ -52,5 +52,3 @@ class Scheduler {
         await this.drive.start();
     }
 }
-
-module.exports = Scheduler;

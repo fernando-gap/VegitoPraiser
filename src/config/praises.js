@@ -1,4 +1,4 @@
-{
+export default {
     "praises": [
         "Vegito, your strength knows no bounds, and your courage is a source of inspiration for all.",
         "In the heat of battle, Vegito, your unwavering spirit shines, a testament to your indomitable will.",
@@ -101,4 +101,4 @@
         "Vegito, the fusion virtuoso, whose combat finesse is a masterpiece painted on the canvas of time.",
         "Praise Vegito, the fusion deity, a divine being whose power radiates like the brilliance of a celestial supernova."
     ]
-}
+};

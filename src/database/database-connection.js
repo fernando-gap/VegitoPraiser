@@ -1,21 +1,39 @@
-const { Sequelize } = require("sequelize");
-const fs = require("fs");
-const path = require("path");
+import { Sequelize } from "sequelize";
+import { readFileSync } from "fs";
+import { resolve } from "path";
+import dotenv from "dotenv";
 
 class DatabaseConnection {
     constructor() {
+
+        if (process.env.NODE_ENV === "production") {
+            this.config = dotenv.parse(readFileSync(resolve(import.meta.dirname, "../../db_prod.env")));
+        } else {
+            this.config = dotenv.parse(readFileSync(resolve(import.meta.dirname, "../../db_dev.env")));
+        }
+
         this.driver = this.getConnection();
     }
 
+    async isOnline() {
+        try {
+            await this.driver.authenticate();
+            return true;
+        } catch (error) {
+            throw new Error("Unable to connect to the database:", error);
+        }
+    }
+}
+
+export class DatabaseConnectionProduction extends DatabaseConnection {
     getConnection() {
-        const prodconf = require("dotenv").parse(fs.readFileSync(path.resolve(__dirname, "../../db_prod.env")));
         const sequelize = new Sequelize(
-            prodconf.MYSQL_DATABASE, 
-            prodconf.MYSQL_USER, 
-            prodconf.MYSQL_PASSWORD, 
+            this.config.MYSQL_DATABASE, 
+            this.config.MYSQL_USER, 
+            this.config.MYSQL_PASSWORD, 
             {
-                host: prodconf.MYSQL_HOST,
-                port: prodconf.MYSQL_PORT,
+                host: this.config.MYSQL_HOST,
+                port: this.config.MYSQL_PORT,
                 dialect: "mysql",
                 define: {
                     freezeTableName: true
@@ -24,31 +42,17 @@ class DatabaseConnection {
         );
         return sequelize;
     }
-
-    async isOnline() {
-        try {
-            await this.driver.authenticate();
-            return true;
-        } catch (error) {
-            throw new Error("Unable to connect to the database:", error);
-        }
-    }
 }
 
-class DatabaseConnectionDev {
-    constructor() {
-        this.driver = this.getConnection();
-    }
-
+export class DatabaseConnectionDevelopment extends DatabaseConnection {
     getConnection() {
-        const devconf = require("dotenv").parse(fs.readFileSync(path.resolve(__dirname, "../../db_dev.env")));
         const sequelize = new Sequelize(
-            devconf.MYSQL_DATABASE, 
-            devconf.MYSQL_USER, 
-            devconf.MYSQL_PASSWORD, 
+            this.config.MYSQL_DATABASE, 
+            this.config.MYSQL_USER, 
+            this.config.MYSQL_PASSWORD, 
             {
-                host: devconf.MYSQL_HOST,
-                port: devconf.MYSQL_PORT,
+                host: this.config.MYSQL_HOST,
+                port: this.config.MYSQL_PORT,
                 dialect: "mysql",
                 define: {
                     freezeTableName: true
@@ -57,19 +61,4 @@ class DatabaseConnectionDev {
         );
         return sequelize;
     }
-
-    async isOnline() {
-        try {
-            await this.driver.authenticate();
-            return true;
-        } catch (error) {
-            console.log(error);
-            throw new Error("Unable to connect to the database:", error);
-        }
-    }
 }
-
-module.exports = {
-    DatabaseConnection, 
-    DatabaseConnectionDev
-};

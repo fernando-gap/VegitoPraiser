@@ -1,7 +1,7 @@
 module.exports = {
     apps : [{
         name   : "VegitoPraiser",
-        script : "./client.js",
+        script : "./src/main.js",
         min_uptime: 10 * 1000,
         listen_timeout: 10000,
         kill_timeout: 5 * 60 * 1000,
@@ -13,12 +13,12 @@ module.exports = {
     },
     {
         name   : "VegitoPraiserDev",
-        script : "./client.js",
+        script : "./src/main.js",
         watch: true,
         ignore_watch: ["node_modules"],
         restart_delay: 5000,
         env: {
             NODE_ENV: "development",
-        },
+        }
     }]
 };

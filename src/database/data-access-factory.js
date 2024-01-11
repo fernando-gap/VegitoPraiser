@@ -1,17 +1,26 @@
-const { DataAccessUser, DataAccessProperty, DataAccessSchedule } = require("./data-access.js");
+import { DataAccessUser, DataAccessProperty, DataAccessSchedule } from "./data-access.js";
+import bot from "../bot.js";
 
-class DataAccessFactory {
-    static async getUser(db) {
+export class DataAccessFactory {
+    static async getUser() {
+        const db = DataAccessFactory.getDB();
         return new DataAccessUser(db);
     }
 
-    static async getProperty(db) {
+    static async getProperty() {
+        const db = DataAccessFactory.getDB();
         return new DataAccessProperty(db);
     }
 
-    static async getSchedule(db) {
+    static async getSchedule() {
+        const db = DataAccessFactory.getDB();
         return new DataAccessSchedule(db);
     }
-}
 
-module.exports = DataAccessFactory;
+    static getDB() {
+        return {
+            db: bot.db,
+            model: bot.model
+        };
+    }
+}

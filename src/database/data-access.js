@@ -1,4 +1,4 @@
-class DataAccessUser {
+export class DataAccessUser {
     constructor(db) {
         this.db = db;
     }
@@ -26,7 +26,7 @@ class DataAccessUser {
 
 }
 
-class DataAccessProperty {
+export class DataAccessProperty {
     constructor(db) {
         this.db = db;
     }
@@ -65,7 +65,7 @@ class DataAccessProperty {
     }
 }
 
-class DataAccessSchedule {
+export class DataAccessSchedule {
     constructor(db) {
         this.db = db;
     }
@@ -117,10 +117,3 @@ class DataAccessSchedule {
         this.temporaryManually = undefined;
     }
 }
-
-
-module.exports = {
-    DataAccessUser,
-    DataAccessProperty,
-    DataAccessSchedule
-};

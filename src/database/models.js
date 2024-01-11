@@ -1,7 +1,7 @@
-const { DataTypes, DatabaseError } = require("sequelize");
-const User = require("./models/user.js");
-const Property = require("./models/property.js");
-const Schedule = require("./models/schedule.js");
+import { DataTypes, DatabaseError } from "sequelize";
+import User from "./models/user.js";
+import Property from "./models/property.js";
+import Schedule from "./models/schedule.js";
 
 class Model {
     constructor(connection) {
@@ -45,4 +45,4 @@ class Model {
     }
 }
 
-module.exports = Model;
+export default Model;
