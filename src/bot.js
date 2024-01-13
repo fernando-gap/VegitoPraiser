@@ -1,10 +1,11 @@
 import { Client, Collection, GatewayIntentBits } from "discord.js";
 import { DatabaseConnectionFactory } from "./database/database-connection-factory.js";
-import Scheduler from "./scheduler/scheduler.js";
+import { CooldownJob, DailyReminderPraiseJob, FortnightReminderJob, HourlyReminderPraiseJob } from "./scheduler/jobs.js";
 import config from "./config/config.js";
-import readFilesRecursively from "./util/recursive-read-files.js";
 import Model from "./database/models.js";
-import { HourlyReminderPraiseJob, DailyReminderPraiseJob, FortnightReminderJob, CooldownJob } from "./scheduler/jobs.js";
+import Scheduler from "./scheduler/scheduler.js";
+import readFilesRecursively from "./util/recursive-read-files.js";
+import { oneLine } from "common-tags";
 
 class Bot {
     static instance = null;
@@ -34,7 +35,11 @@ class Bot {
             if ("data" in command && "execute" in command) {
                 this.client.commands.set(command.data.name, command);
             } else {
-                console.log(`[WARNING] The command at ${file} is missing a required "data" or "execute" property.`);
+                console.log(oneLine`
+                    [WARNING] The command 
+                    at ${file} is missing a required "data" or "execute"
+                    property.`
+                );
             }
         }
         await this.client.login(config.token);
@@ -48,12 +53,16 @@ class Bot {
 
     async setupDatabase(NODE_ENV = process.env.NODE_ENV) {
         try {
-            const connection = await DatabaseConnectionFactory.getConnection(NODE_ENV);
-            this.model = new Model(connection);
+            const c = await DatabaseConnectionFactory.getConnection(NODE_ENV);
+            this.model = new Model(c);
             await this.model.sync();
-            this.db = connection;
+            this.db = c;
         } catch (e) {
-            console.log(`Database Connection Error on "${process.env.NODE_ENV}" Environment`, e);
+            console.log(oneLine`
+                Database Connection Error on 
+                "${process.env.NODE_ENV}" Environment`, e
+            );
+
             process.exit(1); /* to force pm2 to reload process. */
         }
 
@@ -66,16 +75,17 @@ class Bot {
         scheduler.add(new DailyReminderPraiseJob("daily_reminder_praise"));
         scheduler.add(new CooldownJob("cooldown"));
 
-        /* jobs that are single */
-        scheduler.add(new FortnightReminderJob("fortnight_everynone_reminder"));
-
         /* 
         * jobs that shouldn't run or be created in 
-        * development because they affect other servers even in development mode.
+        * development because they affect other 
+        * servers even in development mode.
         */
+        scheduler.add(new FortnightReminderJob("fortnight_everynone_reminder"));
 
         if (process.env.NODE_ENV === "production") {
-            scheduler.createSingle("fortnight_everynone_reminder", { channel_id: config.guild_channels[config.guildId] });
+            scheduler.createSingle("fortnight_everynone_reminder", {
+                channel_id: config.guild_channels[config.guildId] 
+            });
         }
 
         await scheduler.start();

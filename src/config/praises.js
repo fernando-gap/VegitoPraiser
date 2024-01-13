@@ -1,3 +1,4 @@
+/* eslint-disable max-len*/
 export default {
     "praises": [
         "Vegito, your strength knows no bounds, and your courage is a source of inspiration for all.",

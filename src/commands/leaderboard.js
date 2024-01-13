@@ -1,12 +1,12 @@
-import { SlashCommandBuilder, EmbedBuilder, bold } from "discord.js";
+import { SlashCommandBuilder, EmbedBuilder, bold, userMention } from "discord.js";
 import { DataAccessFactory } from "../database/data-access-factory.js";
+import { stripIndents } from "common-tags";
 
 export const data = new SlashCommandBuilder()
     .setName("leaderboard")
     .setDescription("Find the Top Vegito Praisers and your own rank.");
 
 export async function execute(interaction) {
-    let str = "";
     const embed = new EmbedBuilder()
         .setColor(interaction.bot.config.colors.apricot)
         .setTitle("Praise Leaderboard");
@@ -14,13 +14,18 @@ export async function execute(interaction) {
     const prop = await DataAccessFactory.getProperty();
     const rank = await prop.selectAll();
 
-    str += `:first_place: <@${rank[0].user_id}> ${bold(rank[0].praise_count)}\n`;
-    str += `:second_place: <@${rank[1].user_id}> ${bold(rank[1].praise_count)}\n`;
-    str += `:third_place: <@${rank[2].user_id}> ${bold(rank[2].praise_count)}\n`;
+    const c = rank.splice(0, 3).map(v => ({
+        id: v.user_id, 
+        count: v.praise_count}
+    ));
 
-    /* todo: str += `Your current rank is ${rank_number} with ${praise_number} praises.` */
+    const str = stripIndents`
+        :first_place: ${userMention(c[0].id)} ${bold(c[0].count)}
+        :second_place: ${userMention(c[1].id)} ${bold(c[1].count)}
+        :third_place: ${userMention(c[2].id)} ${bold(c[2].count)}
+    `;
+
     embed.setDescription(str);
-
     await interaction.reply({
         embeds: [embed]
     });

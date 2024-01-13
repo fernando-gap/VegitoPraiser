@@ -83,7 +83,10 @@ export class DataAccessSchedule {
     }
 
     async create(id, channelId) {
-        await this.db.model.Schedule.create({ user_id: id, channel_id: channelId});
+        await this.db.model.Schedule.create({
+            user_id: id, 
+            channel_id: channelId
+        });
     }
 
     async update(id, properties) {

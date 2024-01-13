@@ -1,8 +1,8 @@
 {
   "name": "vegitopraiser",
-  "version": "1.2.0",
+  "version": "2.5.0",
   "description": "",
-  "main": "client.js",
+  "main": "./start/main.js",
   "scripts": {
     "bot:test": "echo \"Error: no test specified\" && exit 1",
     "cmd:deploy": "node ./util/deploy-commands.js",
@@ -15,10 +15,11 @@
     "node": ">=21.5.0 <22.0.0"
   },
   "type": "module",
-  "author": "",
+  "author": "Nandoka",
   "license": "MIT",
   "dependencies": {
     "@hokify/agenda": "^6.3.0",
+    "common-tags": "^1.8.2",
     "discord.js": "^14.13.0",
     "dotenv": "^16.3.1",
     "husky": "^8.0.3",

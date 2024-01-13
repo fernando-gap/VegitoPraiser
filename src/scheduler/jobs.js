@@ -1,5 +1,7 @@
 import { EmbedBuilder, bold } from "@discordjs/builders";
+import { userMention } from "discord.js";
 import bot from "../bot.js";
+import { oneLine } from "common-tags";
 
 class Job {
     constructor(name) {
@@ -17,11 +19,18 @@ export class HourlyReminderPraiseJob extends Job {
 
             const embed = new EmbedBuilder()
                 .setColor(bot.config.colors.cerulean)
-                .setDescription(`Use </${praise.name}:${praise.id}> to unleash the power of Vegito, uniting us in celestial devotion.`);
+                .setDescription(oneLine`
+                    Use </${praise.name}:${praise.id}> 
+                    to unleash the power of Vegito, 
+                    uniting us in celestial devotion.`
+                );
 
             const channel = bot.client.channels.cache.get(channel_id);
             await channel.send({
-                content: `<@${user_id}> Your ${bold("hourly")} reminder is here, let your praise resound!`,
+                content: oneLine`
+                    ${userMention(user_id)} Your ${bold("hourly")} 
+                    reminder is here, let your praise resound!
+                `,
                 embeds: [embed]
             });
         });
@@ -50,11 +59,18 @@ export class DailyReminderPraiseJob extends Job {
 
             const embed = new EmbedBuilder()
                 .setColor(bot.config.colors.cerulean)
-                .setDescription(`Use </${praise.name}:${praise.id}> to unleash the power of Vegito, uniting us in celestial devotion.`);
+                .setDescription(oneLine`
+                    Use </${praise.name}:${praise.id}> 
+                    to unleash the power of Vegito, 
+                    uniting us in celestial devotion.
+                `);
 
             const channel = bot.client.channels.cache.get(channel_id);
             await channel.send({
-                content: `<@${user_id}> Your ${bold("daily")} reminder is here, let your praise resound!`,
+                content: oneLine`
+                    ${userMention(user_id)} Your ${bold("daily")} 
+                    reminder is here, let your praise resound!
+                `,
                 embeds: [embed]
             });
         });
@@ -82,7 +98,10 @@ export class CooldownJob extends Job {
     }
 
     async exec(job) {
-        job.unique({"data.user_id": job.attrs.data.user_id, "data.commandName": job.attrs.data.commandName});
+        job.unique({
+            "data.user_id": job.attrs.data.user_id, 
+            "data.commandName": job.attrs.data.commandName
+        });
         job.priority("high");
         job.schedule(new Date(job.attrs.data.endDate));
         await job.save();
@@ -102,7 +121,10 @@ export class FortnightReminderJob extends Job {
             const { channel_id } = job.attrs.data;
             const channel = bot.client.channels.cache.get(channel_id);
             await channel.send({
-                content: "@everyone Our lord and savior vegito saved them from satan.",
+                content: oneLine`
+                    @everyone Our lord and savior 
+                    vegito saved them from satan.
+                `,
             });
         });
     }

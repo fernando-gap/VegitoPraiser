@@ -5,13 +5,13 @@ export class DatabaseConnectionFactory {
     /* TODO: error handling */
 
     static async getConnection(NODE_ENV = process.env.NODE_ENV) {
-        let connection;
+        let c;
         if (NODE_ENV === "production") {
-            connection = await DatabaseConnectionFactory.getProductionConnection();
+            c = await DatabaseConnectionFactory.getProductionConnection();
         } else {
-            connection = await DatabaseConnectionFactory.getDevelopmentConnection();
+            c = await DatabaseConnectionFactory.getDevelopmentConnection();
         }
-        return connection;
+        return c;
     }
 
     static async getProductionConnection() {

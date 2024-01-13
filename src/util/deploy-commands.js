@@ -1,6 +1,7 @@
 import { REST, Routes } from "discord.js";
 import config from "../config/config.js";
 import readFiles from "./recursive-read-files.js";
+import { oneLine } from "common-tags";
 
 const commands = [];
 const commandsTest = [];
@@ -18,7 +19,10 @@ const rest = new REST().setToken(config.token);
                     commands.push(command.data.toJSON());
                 }
             } else {
-                console.log(`[WARNING] The command at ${file} is missing a required "data" or "execute" property.`);
+                console.log(oneLine`
+                    [WARNING] The command at ${file} is missing 
+                    a required "data" or "execute" property.`
+                );
             }
         }
 
@@ -30,15 +34,25 @@ const rest = new REST().setToken(config.token);
                 { body: commands },
             );
 
-            console.log(`Successfully reloaded PROD:${data_prod.length} application (/) commands.`);
+            console.log(oneLine`
+                Successfully reloaded PROD:${data_prod.length} 
+                application (/) commands.
+            `);
         }
 
         if (commandsTest.length >= 1) {
             const data_dev = await rest.put(
-                Routes.applicationGuildCommands(config.clientId, config.guildId),
-                { body: commandsTest },
+                Routes.applicationGuildCommands(
+                    config.clientId, config.guildId
+                ),
+                { 
+                    body: commandsTest 
+                },
             );
-            console.log(`Successfully reloaded DEV:${data_dev.length} application (/) commands.`);
+            console.log(oneLine`
+                Successfully reloaded DEV:${data_dev.length} 
+                application (/) commands.
+            `);
         }
     } catch (error) {
         console.error(error);

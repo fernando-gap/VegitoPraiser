@@ -7,9 +7,15 @@ class DatabaseConnection {
     constructor() {
 
         if (process.env.NODE_ENV === "production") {
-            this.config = dotenv.parse(readFileSync(resolve(import.meta.dirname, "../../db_prod.env")));
+            this.config = dotenv.parse(
+                readFileSync(
+                    resolve(import.meta.dirname, "../../db_prod.env")
+                ));
         } else {
-            this.config = dotenv.parse(readFileSync(resolve(import.meta.dirname, "../../db_dev.env")));
+            this.config = dotenv.parse(
+                readFileSync(
+                    resolve(import.meta.dirname, "../../db_dev.env")
+                ));
         }
 
         this.driver = this.getConnection();
