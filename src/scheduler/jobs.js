@@ -28,7 +28,7 @@ export class HourlyReminderPraiseJob extends Job {
             const channel = bot.client.channels.cache.get(channel_id);
             await channel.send({
                 content: oneLine`
-                    ${userMention(user_id)} Your ${bold("hourly")} 
+                    ${userMention(user_id)} Your ${bold("hourly")}
                     reminder is here, let your praise resound!
                 `,
                 embeds: [embed]
@@ -122,7 +122,7 @@ export class FortnightReminderJob extends Job {
             const channel = bot.client.channels.cache.get(channel_id);
             await channel.send({
                 content: oneLine`
-                    @everyone Our lord and savior 
+                    @everyone Our lord and savior
                     vegito saved them from satan.
                 `,
             });
