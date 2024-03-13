@@ -12,7 +12,7 @@ export async function execute(interaction) {
         .setTitle("Praise Leaderboard");
 
     const prop = await DataAccessFactory.getProperty(interaction.bot.db);
-    const rank = await prop.selectAll();
+    const rank = await prop.selectAll(10, 0, ["praise_count", "DESC"]);
 
     const c = rank.splice(0, 3).map(v => ({
         id: v.user_id, 

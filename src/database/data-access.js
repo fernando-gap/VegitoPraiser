@@ -16,11 +16,13 @@ class DataAccess {
     }
 
     async selectAll(limit = 50, offset = 0, order = []) {
-        return await this.model.findAll({
-            order: order,
-            limit: limit,
-            offset: offset
-        });
+        const query = {limit, offset};
+
+        if (order.length > 0) {
+            query.order = [order];
+        }
+
+        return await this.model.findAll(query);
     }
 
     async create(data) {
