@@ -5,8 +5,8 @@
   "main": "./start/main.js",
   "scripts": {
     "bot:test": "echo \"Error: no test specified\" && exit 1",
-    "cmd:deploy": "node ./util/deploy-commands.js",
-    "cmd:delete": "node ./util/delete-commands.js",
+    "cmd:deploy": "node ./src/util/deploy-commands.js",
+    "cmd:delete": "node ./src/util/delete-commands.js",
     "prepare": "husky install",
     "eslint": "npx eslint --fix ."
   },

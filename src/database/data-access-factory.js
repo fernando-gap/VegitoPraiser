@@ -1,26 +1,11 @@
-import { DataAccessUser, DataAccessProperty, DataAccessSchedule } from "./data-access.js";
-import bot from "../bot.js";
+import { DataAccessUser, DataAccessProperty } from "./data-access.js";
 
 export class DataAccessFactory {
-    static async getUser() {
-        const db = DataAccessFactory.getDB();
-        return new DataAccessUser(db);
+    static async getUser(db) {
+        return new DataAccessUser(db, "User");
     }
 
-    static async getProperty() {
-        const db = DataAccessFactory.getDB();
-        return new DataAccessProperty(db);
-    }
-
-    static async getSchedule() {
-        const db = DataAccessFactory.getDB();
-        return new DataAccessSchedule(db);
-    }
-
-    static getDB() {
-        return {
-            db: bot.db,
-            model: bot.model
-        };
+    static async getProperty(db) {
+        return new DataAccessProperty(db, "Property");
     }
 }

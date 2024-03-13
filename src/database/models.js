@@ -1,12 +1,11 @@
 import { DataTypes, DatabaseError } from "sequelize";
 import User from "./models/user.js";
 import Property from "./models/property.js";
-import Schedule from "./models/schedule.js";
 
 class Model {
     constructor(connection) {
         if (connection !== undefined) {
-            this.driver = connection.driver;
+            this.driver = connection;
         }
     }
 
@@ -26,18 +25,9 @@ class Model {
         }
     }
 
-    get Schedule() {
-        if (this.online()) {
-            return Schedule(this.driver, DataTypes);
-        } else {
-            throw new DatabaseError("Database has no driver connenction");
-        }
-    }
-
     async sync() {
         await this.User.sync();
         await this.Property.sync();
-        await this.Schedule.sync();
     }
     
     online() {

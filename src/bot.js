@@ -1,11 +1,12 @@
-import { Client, Collection, GatewayIntentBits } from "discord.js";
-import { DatabaseConnectionFactory } from "./database/database-connection-factory.js";
-import { CooldownJob, DailyReminderPraiseJob, FortnightReminderJob, HourlyReminderPraiseJob } from "./scheduler/jobs.js";
+import { oneLine } from "common-tags";
+import { Client, Collection, Events, GatewayIntentBits } from "discord.js";
 import config from "./config/config.js";
 import Model from "./database/models.js";
+import clientReady from "./events/client-ready.js";
+import { CooldownJob, DailyReminderPraiseJob, FortnightReminderJob, HourlyReminderPraiseJob } from "./scheduler/jobs.js";
 import Scheduler from "./scheduler/scheduler.js";
 import readFilesRecursively from "./util/recursive-read-files.js";
-import { oneLine } from "common-tags";
+import { DatabaseConnectionDevelopment, DatabaseConnectionProduction } from "./database/database-connection.js";
 
 class Bot {
     static instance = null;
@@ -42,21 +43,33 @@ class Bot {
                 );
             }
         }
+
+        this.client.once(Events.ClientReady, clientReady);
         await this.client.login(config.token);
     }
     async setupConfiguration() {
         this.config = {
             colors: await import("./config/colors.js"),
-            commands: (await import("./config/commands.js")).default
+            commands: (await import("./config/commands.js")).default,
+            shop: (await import("./config/shop.js")).default,
+            emojis: (await import("./config/emoji.js")).default,
         };
     }
 
     async setupDatabase(NODE_ENV = process.env.NODE_ENV) {
         try {
-            const c = await DatabaseConnectionFactory.getConnection(NODE_ENV);
-            this.model = new Model(c);
+            let connection;
+            if (NODE_ENV === "production") {
+                connection = new DatabaseConnectionProduction()
+                    .getConnection("../../db_prod.env");
+            } else {
+                connection = new DatabaseConnectionDevelopment()
+                    .getConnection("../../db_dev.env");
+            }
+
+            this.model = new Model(connection);
             await this.model.sync();
-            this.db = c;
+            this.db = connection;
         } catch (e) {
             console.log(oneLine`
                 Database Connection Error on 

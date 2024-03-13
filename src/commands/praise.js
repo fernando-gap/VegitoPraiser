@@ -20,11 +20,11 @@ export async function execute(interaction) {
         embeds: [embed]
     });
 
-    const userPropertyDAO = await DataAccessFactory.getProperty();
-    const userDAO = await DataAccessFactory.getUser();
-    await userPropertyDAO.updatePraiserCount(interaction.user.id);
+    const propertyDAO = await DataAccessFactory.getProperty(interaction.bot.db);
+    const userDAO = await DataAccessFactory.getUser(interaction.bot.db);
+    await propertyDAO.updatePraiserCount(interaction.user.id);
 
-    const user = await userDAO.select(interaction.user.id);
+    const user = await userDAO.selectOne({id: interaction.user.id});
 
     if (user.has_hourly_reminder) {
         await interaction.bot.scheduler.reschedule("hourly_reminder_praise", {

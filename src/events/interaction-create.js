@@ -79,7 +79,7 @@ export default async interaction => {
             await bot.setupDatabase(process.env.NODE_ENV);
         } else {
             await interaction.reply(oneLine`
-                Worker ${bold("Nandoka")} 
+                Worker ${bold("Nandoka")}
                 is currently doing maintenance :3`
             );
 
@@ -88,8 +88,14 @@ export default async interaction => {
     } 
     
     try {
-        const user = await DataAccessFactory.getUser();
-        await user.create(interaction.user.id);
+        const user = await DataAccessFactory.getUser(bot.db);
+        try {
+            await user.create({id: interaction.user.id});
+        } catch(e) {
+            if (e.name !== "SequelizeUniqueConstraintError") {
+                console.log(e);
+            }
+        }
         interaction.bot = bot;
         await command.execute(interaction);
     } catch (error) {

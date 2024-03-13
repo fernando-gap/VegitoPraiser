@@ -11,7 +11,7 @@ export async function execute(interaction) {
         .setColor(interaction.bot.config.colors.apricot)
         .setTitle("Praise Leaderboard");
 
-    const prop = await DataAccessFactory.getProperty();
+    const prop = await DataAccessFactory.getProperty(interaction.bot.db);
     const rank = await prop.selectAll();
 
     const c = rank.splice(0, 3).map(v => ({

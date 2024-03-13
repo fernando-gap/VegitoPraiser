@@ -27,8 +27,8 @@ export async function execute(interaction) {
         .setColor(interaction.bot.config.colors.apricot);
 
     const id = interaction.user.id;
-    const userDAO = await DataAccessFactory.getUser();
-    const user = await userDAO.select(id);
+    const userDAO = await DataAccessFactory.getUser(interaction.bot.db);
+    const user = await userDAO.selectOne({ id });
 
     const numberType = notifyType === "hourly"
         ? `<t:${Math.round((Date.now() + 3600 * 1000) / 1000)}:R>`
@@ -54,8 +54,8 @@ export async function execute(interaction) {
                 content = `<@${id}> You enabled hourly notifications!`;
                 await interaction.reply({ content: content, embeds: [embed] });
 
-                await userDAO.update(id, "has_hourly_reminder", true);
-                await userDAO.update(id, "has_daily_reminder", false);
+                await userDAO.update({has_hourly_reminder: true}, { id });
+                await userDAO.update({has_daily_reminder: false}, { id });
 
                 await interaction.bot.scheduler.create(
                     "hourly_reminder_praise", 
@@ -97,7 +97,7 @@ export async function execute(interaction) {
                     }
                 );
 
-                await userDAO.update(id, "has_hourly_reminder", false);
+                await userDAO.update({has_hourly_reminder: false}, { id });
             }
 
             await interaction.reply({ content: content, embeds: [embed] });
@@ -128,8 +128,9 @@ export async function execute(interaction) {
 
                 content = `${userMention(id)} You enabled daily notifications!`;
                 await interaction.reply({ content: content, embeds: [embed] });
-                await userDAO.update(id, "has_daily_reminder", true);
-                await userDAO.update(id, "has_hourly_reminder", false);
+                await userDAO.update({has_daily_reminder: true}, { id });
+                await userDAO.update({has_hourly_reminder: false}, { id });
+
                 await interaction.bot.scheduler.create(
                     "daily_reminder_praise",
                     {
@@ -169,7 +170,7 @@ export async function execute(interaction) {
                         user_id: id 
                     }
                 );
-                await userDAO.update(id, "has_daily_reminder", false);
+                await userDAO.update({has_daily_reminder: false}, { id });
             }
             await interaction.reply({ content: content, embeds: [embed] });
         }

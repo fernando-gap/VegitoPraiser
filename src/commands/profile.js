@@ -4,14 +4,18 @@ import { oneLine, stripIndents } from "common-tags";
 
 
 export const data = new SlashCommandBuilder()
-    .setName("stats")
+    .setName("profile")
     .setDescription(oneLine`
         Check out your profile 
         status as a fellow Vegito praiser.`
     );
 export async function execute(interaction) {
-    const user = await DataAccessFactory.getProperty();
-    const value = await user.select(interaction.user.id, "praise_count");
+    const user = await DataAccessFactory.getProperty(interaction.bot.db);
+    const value = await user.selectOne(
+        { user_id: interaction.user.id }, 
+        ["praise_count"]
+    );
+
     const embed = new EmbedBuilder()
         .setColor(interaction.bot.config.colors.cerulean)
         .setDescription(stripIndents`

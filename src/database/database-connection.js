@@ -4,61 +4,49 @@ import { resolve } from "path";
 import dotenv from "dotenv";
 
 class DatabaseConnection {
-    constructor() {
-
-        if (process.env.NODE_ENV === "production") {
-            this.config = dotenv.parse(
-                readFileSync(
-                    resolve(import.meta.dirname, "../../db_prod.env")
-                ));
-        } else {
-            this.config = dotenv.parse(
-                readFileSync(
-                    resolve(import.meta.dirname, "../../db_dev.env")
-                ));
-        }
-
-        this.driver = this.getConnection();
-    }
-
-    async isOnline() {
-        try {
-            await this.driver.authenticate();
-            return true;
-        } catch (error) {
-            throw new Error("Unable to connect to the database:", error);
-        }
+    load_config(path) {
+        return dotenv.parse(
+            readFileSync(
+                resolve(import.meta.dirname, path)
+            )
+        );
     }
 }
 
 export class DatabaseConnectionProduction extends DatabaseConnection {
-    getConnection() {
+    getConnection(path) {
+        const config = this.load_config(path);
         const sequelize = new Sequelize(
-            this.config.MYSQL_DATABASE, 
-            this.config.MYSQL_USER, 
-            this.config.MYSQL_PASSWORD, 
+            config.MYSQL_DATABASE,
+            config.MYSQL_USER,
+            config.MYSQL_PASSWORD,
             {
-                host: this.config.MYSQL_HOST,
-                port: this.config.MYSQL_PORT,
+                host: config.MYSQL_HOST,
+                port: config.MYSQL_PORT,
                 dialect: "mysql",
                 define: {
                     freezeTableName: true
-                }
-            }
+                },
+                logging: false
+            },
         );
         return sequelize;
     }
 }
 
+/**
+ * The getConnection can change, respect SRP.
+ */
 export class DatabaseConnectionDevelopment extends DatabaseConnection {
-    getConnection() {
+    getConnection(path) {
+        const config = this.load_config(path);
         const sequelize = new Sequelize(
-            this.config.MYSQL_DATABASE, 
-            this.config.MYSQL_USER, 
-            this.config.MYSQL_PASSWORD, 
+            config.MYSQL_DATABASE,
+            config.MYSQL_USER,
+            config.MYSQL_PASSWORD,
             {
-                host: this.config.MYSQL_HOST,
-                port: this.config.MYSQL_PORT,
+                host: config.MYSQL_HOST,
+                port: config.MYSQL_PORT,
                 dialect: "mysql",
                 define: {
                     freezeTableName: true

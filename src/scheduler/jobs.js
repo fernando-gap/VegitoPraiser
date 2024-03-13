@@ -68,7 +68,7 @@ export class DailyReminderPraiseJob extends Job {
             const channel = bot.client.channels.cache.get(channel_id);
             await channel.send({
                 content: oneLine`
-                    ${userMention(user_id)} Your ${bold("daily")} 
+                    ${userMention(user_id)} Your ${bold("daily")}
                     reminder is here, let your praise resound!
                 `,
                 embeds: [embed]
