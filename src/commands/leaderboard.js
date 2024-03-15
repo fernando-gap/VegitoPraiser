@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder, bold, userMention } from "discord.js";
 import { DataAccessFactory } from "../database/data-access-factory.js";
-import { stripIndents } from "common-tags";
+import { stripIndents, oneLine } from "common-tags";
 
 export const data = new SlashCommandBuilder()
     .setName("leaderboard")
@@ -12,18 +12,27 @@ export async function execute(interaction) {
         .setTitle("Praise Leaderboard");
 
     const prop = await DataAccessFactory.getProperty(interaction.bot.db);
-    const rank = await prop.selectAll(10, 0, ["praise_count", "DESC"]);
+    let rank = await prop.selectAll(10, 0, ["praise_count", "DESC"]);
 
     const c = rank.splice(0, 3).map(v => ({
         id: v.user_id, 
         count: v.praise_count}
     ));
 
-    const str = stripIndents`
+    let str = stripIndents`
         :first_place: ${userMention(c[0].id)} ${bold(c[0].count)}
         :second_place: ${userMention(c[1].id)} ${bold(c[1].count)}
         :third_place: ${userMention(c[2].id)} ${bold(c[2].count)}
     `;
+
+    rank = rank.filter((v) => v.praise_count > 0);
+
+    for (let i = 0; i < rank.length; i++) {
+        str += "\n" + oneLine`
+            ${4+i}. ${userMention(rank[i].user_id)}
+            ${bold(rank[i].praise_count)}
+        `;
+    }
 
     embed.setDescription(str);
     await interaction.reply({
