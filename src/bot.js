@@ -22,7 +22,13 @@ class Bot {
     async init() {
         await this.setupClient();
         await this.setupConfiguration();
-        await this.setupDatabase();
+        try {
+            await this.setupDatabase();
+        } catch (e) {
+            /* to force pm2 to reload process. */
+            console.log("Init Failure: ", e.name);
+            process.exit(1);
+        }
         await this.setupScheduler();
     }
 
@@ -57,27 +63,18 @@ class Bot {
     }
 
     async setupDatabase(NODE_ENV = process.env.NODE_ENV) {
-        try {
-            let connection;
-            if (NODE_ENV === "production") {
-                connection = new DatabaseConnectionProduction()
-                    .getConnection("../../db_prod.env");
-            } else {
-                connection = new DatabaseConnectionDevelopment()
-                    .getConnection("../../db_dev.env");
-            }
-
-            this.model = new Model(connection);
-            await this.model.sync();
-            this.db = connection;
-        } catch (e) {
-            console.log(oneLine`
-                Database Connection Error on 
-                "${process.env.NODE_ENV}" Environment`, e
-            );
-
-            process.exit(1); /* to force pm2 to reload process. */
+        let connection;
+        if (NODE_ENV === "production") {
+            connection = new DatabaseConnectionProduction()
+                .getConnection("../../db_prod.env");
+        } else {
+            connection = new DatabaseConnectionDevelopment()
+                .getConnection("../../db_dev.env");
         }
+
+        this.model = new Model(connection);
+        await this.model.sync();
+        this.db = connection;
 
     }
 
@@ -97,7 +94,7 @@ class Bot {
 
         if (process.env.NODE_ENV === "production") {
             scheduler.createSingle("fortnight_everynone_reminder", {
-                channel_id: config.guild_channels[config.guildId] 
+                channel_id: config.guild_channels[config.guildId]
             });
         }
 

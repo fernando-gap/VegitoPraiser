@@ -22,18 +22,18 @@ export default async interaction => {
     * Cooldown
     */
 
-    const userCooldown = await bot.scheduler.drive.jobs({ 
-        name: "cooldown", 
-        "data.user_id": interaction.user.id, 
-        "data.commandName": command.data.name 
+    const userCooldown = await bot.scheduler.drive.jobs({
+        name: "cooldown",
+        "data.user_id": interaction.user.id,
+        "data.commandName": command.data.name
     });
 
-    const defaultlCooldown = 0; // no cooldown
+    const defaultCooldown = 0; // no cooldown
 
     if (userCooldown.length >= 1) {
         const user = userCooldown[0];
         const expiredTimestamp = Math.round(user.attrs.data.endDate / 1000);
-        return interaction.reply({ 
+        return interaction.reply({
             content: stripIndents`
                 ${oneLine`
                     As Vegito hones his strength between battles, 
@@ -43,14 +43,14 @@ export default async interaction => {
                 ${italic(oneLine` 
                     ${time(expiredTimestamp, "R")}, 
                     unleash the praise and amplify your strength!`)}
-                `, 
-            ephemeral: true 
+                `,
+            ephemeral: true
         });
     } else {
-        const cooldownAmount = (command.cooldown ?? defaultlCooldown) * 1000;
+        const cooldownAmount = (command.cooldown ?? defaultCooldown) * 1000;
 
         if (cooldownAmount > 0) {
-            await bot.scheduler.create("cooldown", { 
+            await bot.scheduler.create("cooldown", {
                 user_id: interaction.user.id,
                 commandName: command.data.name,
                 endDate: Date.now() + cooldownAmount
@@ -62,36 +62,38 @@ export default async interaction => {
     * Development Server
     */
 
-    if (config.guildId === interaction.guildId) {
-        try {
-            await bot.setupDatabase("development");
-        } catch (e) {
-            await interaction.reply(oneLine`
-                ${bold("Development Database Not Connected:")}
-                ${e.toString()}`, {
-                ephemeral: true 
-            });
-
-            return;
-        }
-    } else {
-        if (process.env.NODE_ENV === "production") {
-            await bot.setupDatabase(process.env.NODE_ENV);
+    try {
+        if (config.guildId === interaction.guildId) {
+            try {
+                return await bot.setupDatabase("development");
+            } catch (e) {
+                await interaction.reply(stripIndents`
+                ${bold("Development Database not Connected:")}
+                > ${e.toString()}`, {
+                    ephemeral: true
+                });
+            }
         } else {
-            await interaction.reply(oneLine`
-                Worker ${bold("Nandoka")}
-                is currently doing maintenance :3`
-            );
-
-            return;
+            if (process.env.NODE_ENV === "production") {
+                await bot.setupDatabase(process.env.NODE_ENV);
+            } else {
+                return await interaction.reply(oneLine`
+                    Worker ${bold("Nandoka")}
+                    is currently doing maintenance :3`
+                );
+            }
         }
-    } 
-    
+    } catch (e) {
+        console.log(e, process.env.NODE_ENV);
+        return;
+    }
+
+
     try {
         const user = await DataAccessFactory.getUser(bot.db);
         try {
-            await user.create({id: interaction.user.id});
-        } catch(e) {
+            await user.create({ id: interaction.user.id });
+        } catch (e) {
             if (e.name !== "SequelizeUniqueConstraintError") {
                 console.log(e);
             }
@@ -101,22 +103,22 @@ export default async interaction => {
     } catch (error) {
         console.error(error);
         if (interaction.replied || interaction.deferred) {
-            await interaction.followUp({ 
+            await interaction.followUp({
                 content: oneLine`
                     Even in the face of error, Vegito's unwavering spirit 
                     remains a symbol of resilience and perseverance, 
                     transcending any temporary setback. His legacy 
                     of courage and strength echoes throughout the universe, 
-                    serving as a beacon of hope and determination for all.  `, 
-                ephemeral: true 
+                    serving as a beacon of hope and determination for all.  `,
+                ephemeral: true
             });
         } else {
-            await interaction.reply({ 
+            await interaction.reply({
                 content: oneLine`
                     Even amidst ${bold("error")}, Vegito's unwavering 
                     spirit remains a symbol of resilience and determination, 
                     inspiring all in its wake.`,
-                ephemeral: true 
+                ephemeral: true
             });
         }
     }
