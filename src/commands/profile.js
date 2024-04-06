@@ -10,18 +10,20 @@ export const data = new SlashCommandBuilder()
         status as a fellow Vegito praiser.`
     );
 export async function execute(interaction) {
-    const user = await DataAccessFactory.getProperty(interaction.bot.db);
+    const user = await DataAccessFactory.getUser(interaction.bot.db);
     const value = await user.selectOne(
-        { user_id: interaction.user.id }, 
-        ["praise_count"]
+        { id: interaction.user.id }, ["praise_count", "potara_coins"]
     );
 
     const embed = new EmbedBuilder()
         .setColor(interaction.bot.config.colors.cerulean)
         .setDescription(stripIndents`
             ${bold(`${userMention(interaction.user.id)} Statistics\n`)}
-            Total Praises: ${value.praise_count}
-            ${value.praise_count} <:potaraearrings:1193378255407951982>`)
+            Total Praises: ${value.dataValues.praise_count}
+            ${oneLine`
+                Potara Coins: ${value.dataValues.potara_coins}
+                ${interaction.bot.config.emojis.potara_coins}`}
+            `)
         .setThumbnail(interaction.user.displayAvatarURL());
 
     await interaction.reply({

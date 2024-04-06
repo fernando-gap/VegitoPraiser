@@ -12,7 +12,7 @@ class DataAccess {
             query.attributes = attributes;
         }
 
-        return await this.model.findOne(query);
+        return this.model.findOne(query);
     }
 
     async selectAll(limit = 50, offset = 0, order = []) {
@@ -22,7 +22,7 @@ class DataAccess {
             query.order = [order];
         }
 
-        return await this.model.findAll(query);
+        return this.model.findAll(query);
     }
 
     async create(data) {
@@ -39,18 +39,11 @@ class DataAccess {
             where: where
         });
     }
-}
 
-export class DataAccessUser extends DataAccess { }
-export class DataAccessProperty extends DataAccess {
-    async updatePraiserCount(id) {
-        let data = await this.selectOne({ user_id: id });
-
-        if (data === null) {
-            await this.create({ user_id: id });
-            data = await this.selectOne({ user_id: id });
-        }
-
-        data.increment(["praise_count"]);
+    async increment(where, ...columns) {
+        let data = await this.selectOne(where);
+        await data.increment(columns);
     }
 }
+
+export class DataAccessUser extends DataAccess {}

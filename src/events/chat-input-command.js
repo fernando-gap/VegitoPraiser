@@ -19,6 +19,38 @@ export default async interaction => {
     }
 
     /*
+    * Development Server
+    */
+
+    try {
+        if (config.guildId === interaction.guildId) {
+            try {
+                await bot.setupDatabase("development");
+            } catch (e) {
+                return await interaction.reply(
+                    stripIndents`
+                        ${bold("Development Database not Connected:")}
+                        > ${e.toString()}
+                    `, { 
+                        ephemeral: true 
+                    });
+            }
+        } else {
+            if (process.env.NODE_ENV === "production") {
+                await bot.setupDatabase(process.env.NODE_ENV);
+            } else {
+                return await interaction.reply(oneLine`
+                    Worker ${bold("Nandoka")}
+                    is currently doing maintenance :3`
+                );
+            }
+        }
+    } catch (e) {
+        console.log(e, process.env.NODE_ENV);
+        return;
+    }
+
+    /*
     * Cooldown
     */
 
@@ -57,37 +89,6 @@ export default async interaction => {
             });
         }
     }
-
-    /*
-    * Development Server
-    */
-
-    try {
-        if (config.guildId === interaction.guildId) {
-            try {
-                return await bot.setupDatabase("development");
-            } catch (e) {
-                await interaction.reply(stripIndents`
-                ${bold("Development Database not Connected:")}
-                > ${e.toString()}`, {
-                    ephemeral: true
-                });
-            }
-        } else {
-            if (process.env.NODE_ENV === "production") {
-                await bot.setupDatabase(process.env.NODE_ENV);
-            } else {
-                return await interaction.reply(oneLine`
-                    Worker ${bold("Nandoka")}
-                    is currently doing maintenance :3`
-                );
-            }
-        }
-    } catch (e) {
-        console.log(e, process.env.NODE_ENV);
-        return;
-    }
-
 
     try {
         const user = await DataAccessFactory.getUser(bot.db);

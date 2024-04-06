@@ -11,12 +11,12 @@ export async function execute(interaction) {
         .setColor(interaction.bot.config.colors.apricot)
         .setTitle("Praise Leaderboard");
 
-    const prop = await DataAccessFactory.getProperty(interaction.bot.db);
+    const prop = await DataAccessFactory.getUser(interaction.bot.db);
     let rank = await prop.selectAll(10, 0, ["praise_count", "DESC"]);
 
     const c = rank.splice(0, 3).map(v => ({
-        id: v.user_id, 
-        count: v.praise_count}
+        id: v.dataValues.id, 
+        count: v.dataValues.praise_count}
     ));
 
     let str = stripIndents`

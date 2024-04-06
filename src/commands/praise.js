@@ -20,10 +20,8 @@ export async function execute(interaction) {
         embeds: [embed]
     });
 
-    const propertyDAO = await DataAccessFactory.getProperty(interaction.bot.db);
     const userDAO = await DataAccessFactory.getUser(interaction.bot.db);
-    await propertyDAO.updatePraiserCount(interaction.user.id);
-
+    userDAO.increment({ id: interaction.user.id }, "praise_count", "potara_coins");
     const user = await userDAO.selectOne({id: interaction.user.id});
 
     if (user.has_hourly_reminder) {
