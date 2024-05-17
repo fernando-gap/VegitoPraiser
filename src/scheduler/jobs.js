@@ -133,3 +133,23 @@ export class FortnightReminderJob extends Job {
         this.drive.every("14 days", this.name, data);
     }
 }
+
+export class QihaBumpReminder extends Job {
+    define(drive) {
+        this.drive = drive;
+
+        this.drive.define(this.name, async job => {
+            const { channel_id, user_id } = job.attrs.data;
+            const channel = bot.client.channels.cache.get(channel_id);
+            await channel.send({
+                content: oneLine`
+                    ${userMention(user_id)}, it is time to /bump!
+                `,
+            });
+        });
+    }
+
+    exec(data) {
+        this.drive.every("2 hours", this.name, data);
+    }
+}

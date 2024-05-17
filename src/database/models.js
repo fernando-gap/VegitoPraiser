@@ -1,6 +1,7 @@
 import { DataTypes, DatabaseError } from "sequelize";
 import User from "./models/user.js";
-import Property from "./models/property.js";
+import Shop from "./models/shop.js";
+import UserShopInventory from "./models/inventory.js";
 
 class Model {
     constructor(connection) {
@@ -17,17 +18,27 @@ class Model {
         }
     }
 
-    get Property() {
+    get Shop() {
         if (this.online()) {
-            return Property(this.driver, DataTypes);
+            return Shop(this.driver, DataTypes);
         } else {
             throw new DatabaseError("Database has no active connection");
         }
     }
 
+    get UserShopInventory() {
+        if (this.online()) {
+            return UserShopInventory(this.driver, DataTypes);
+        } else {
+            throw new DatabaseError("Database has no active connection");
+        }
+    }
+
+
     async sync() {
         await this.User.sync();
-        await this.Property.sync();
+        await this.Shop.sync();
+        await this.UserShopInventory.sync();
     }
     
     online() {

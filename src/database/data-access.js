@@ -25,8 +25,8 @@ class DataAccess {
         return this.model.findAll(query);
     }
 
-    async create(data) {
-        return await this.model.create(data);
+    async create(data, options) {
+        return await this.model.create(data, options);
     }
     async delete(where) {
         return await this.model.destroy({
@@ -34,10 +34,11 @@ class DataAccess {
         });
     }
 
-    async update(newData, where) {
-        await this.model.update(newData, {
-            where: where
-        });
+    async update(newData, where, options) {
+        return this.model.update(newData, {
+            where: where,
+            ...options
+        }, options);
     }
 
     async increment(where, ...columns) {
@@ -47,3 +48,5 @@ class DataAccess {
 }
 
 export class DataAccessUser extends DataAccess {}
+export class DataAccessShop extends DataAccess {}
+export class DataAccessInventory extends DataAccess {}

@@ -29,7 +29,7 @@ export async function execute(interaction) {
 
     for (let i = 0; i < rank.length; i++) {
         str += "\n" + oneLine`
-            ${4+i}. ${userMention(rank[i].user_id)}
+            ${4+i}. ${userMention(rank[i].id)}
             ${bold(rank[i].praise_count)}
         `;
     }

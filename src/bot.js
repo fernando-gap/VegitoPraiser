@@ -57,7 +57,6 @@ class Bot {
         this.config = {
             colors: await import("./config/colors.js"),
             commands: (await import("./config/commands.js")).default,
-            shop: (await import("./config/shop.js")).default,
             emojis: (await import("./config/emoji.js")).default,
         };
     }

@@ -10,29 +10,26 @@ module.exports = {
      * @returns
      */
     up: (queryInterface, Sequelize) => {
-        return queryInterface.createTable("UserShopInventory", {
-            id: {
+        return queryInterface.createTable("Shop", {
+            code: {
+                type: Sequelize.STRING,
+                primaryKey: true
+            },
+            name: {
+                type: Sequelize.STRING,
+                allowNull: false
+            },
+            emoji: {
+                type: Sequelize.STRING,
+                allowNull: false
+            },
+            description: {
+                type: Sequelize.STRING,
+                allowNull: false
+            },
+            price: {
                 type: Sequelize.INTEGER,
-                primaryKey: true,
-                autoIncrement: true
-            },
-            item_code: {
-                type: Sequelize.STRING,
-                references: {
-                    model: "Shop",
-                    key: "code"
-                },
-                onDelete: "cascade",
-                onUpdate: "cascade"
-            },
-            user_id: {
-                type: Sequelize.STRING,
-                references: {
-                    model: "User",
-                    key: "id"
-                },
-                onDelete: "cascade",
-                onUpdate: "cascade"
+                allowNull: false
             }
         });
     },
@@ -47,6 +44,6 @@ module.exports = {
      * @returns
      */
     down: (queryInterface) => {
-        return queryInterface.dropTable("UserShopInventory");
+        return queryInterface.dropTable("Shop");
     }
 };
