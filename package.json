@@ -32,8 +32,10 @@
     "sequelize-typescript": "^2.1.6"
   },
   "devDependencies": {
+    "@eslint/js": "^9.4.0",
     "@sapphire/shapeshift": "^4.0.0",
     "@types/common-tags": "^1.8.4",
+    "@types/eslint__js": "^8.42.3",
     "@types/node": "^20.12.13",
     "@types/validator": "^13.11.10",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
@@ -43,6 +45,7 @@
     "eslint-plugin-n": "^16.6.2",
     "eslint-plugin-promise": "^6.1.1",
     "sequelize-cli": "^6.6.2",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^7.11.0"
   }
 }
