@@ -1,0 +1,33 @@
+{
+    "compilerOptions": {
+        "removeComments": true,
+        "module": "NodeNext",
+        "sourceMap": true,
+        "noImplicitAny": true,
+        /* for migration */
+        "strict": true,
+        "alwaysStrict": true,
+        "allowJs": true,
+        // "checkJs": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "listEmittedFiles": true,
+        "declaration": true,
+        "declarationDir": "./build/declarations",
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitOverride": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        // "incremental": true,
+        "outDir": "build",
+        // "assumeChangesOnlyAffectDirectDependencies": true
+    },
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "src/database/migrations/*",
+        "src/database/seeds/*",
+    ]
+}

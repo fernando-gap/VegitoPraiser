@@ -1,11 +1,10 @@
 module.exports = {
     apps : [{
         name   : "VegitoPraiser",
-        script : "./src/main.js",
-        min_uptime: 1000,
-        listen_timeout: 1000,
-        kill_timeout: 5 * 60 * 1000,
-        max_restarts: 100,
+        script : "./build/main.js",
+        listen_timeout: 5000,
+        kill_timeout: 5,
+        max_restarts: 10,
         restart_delay: 5000,
         env: {
             NODE_ENV: "production"

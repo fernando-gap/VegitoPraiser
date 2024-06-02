@@ -1,5 +1,5 @@
 # discord bot configuration
-src/**/*/config.js
+src/config.js
 src/**/*/config.json
 
 # database configuration for sequelize
@@ -12,3 +12,5 @@ database.js
 
 node_modules
 TODO
+
+build/

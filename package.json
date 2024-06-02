@@ -2,7 +2,7 @@
   "name": "vegitopraiser",
   "version": "2.9.0",
   "description": "",
-  "main": "./start/main.js",
+  "main": "./build/main.js",
   "scripts": {
     "bot:test": "echo \"Error: no test specified\" && exit 1",
     "cmd:deploy": "node ./src/util/deploy-commands.js",
@@ -12,12 +12,13 @@
   },
   "engines": {
     "npm": ">=10.2.5",
-    "node": ">=21.5.0 <22.0.0"
+    "node": ">=21.5.0 <23.0.0"
   },
   "type": "module",
   "author": "Nandoka",
   "license": "MIT",
   "dependencies": {
+    "@discordjs/collection": "^2.1.0",
     "@hokify/agenda": "^6.3.0",
     "common-tags": "^1.8.2",
     "discord.js": "^14.13.0",
@@ -26,10 +27,22 @@
     "install": "^0.13.0",
     "mysql2": "^3.6.2",
     "npm": "^10.2.5",
-    "sequelize": "^6.33.0"
+    "reflect-metadata": "^0.2.2",
+    "sequelize": "^6.37.3",
+    "sequelize-typescript": "^2.1.6"
   },
   "devDependencies": {
-    "eslint": "^8.52.0",
-    "sequelize-cli": "^6.6.2"
+    "@sapphire/shapeshift": "^4.0.0",
+    "@types/common-tags": "^1.8.4",
+    "@types/node": "^20.12.13",
+    "@types/validator": "^13.11.10",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "eslint": "^8.57.0",
+    "eslint-config-standard-with-typescript": "^43.0.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-n": "^16.6.2",
+    "eslint-plugin-promise": "^6.1.1",
+    "sequelize-cli": "^6.6.2",
+    "typescript": "^5.4.5"
   }
 }
