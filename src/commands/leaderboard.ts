@@ -1,14 +1,13 @@
-import { AutocompleteInteraction, CacheType } from "discord.js";
 import { ContextLeaderboard, VegitoCommand } from "../interfaces.js";
-import { VegitoInteraction } from "../types.js";
 import ViewLeaderboard from "../views/view-leaderboard.js";
 import VegitoEvent from "../events.js";
+import { CacheType, ChatInputCommandInteraction } from "discord.js";
 
 export default class Leaderboard extends VegitoEvent<VegitoCommand> {
-    override async handleChatInputCommand(interaction: VegitoInteraction) {
+    override async handleChatInputCommand(interaction: ChatInputCommandInteraction<CacheType>) {
         const context: ContextLeaderboard = { users: [] };
         const view = new ViewLeaderboard();
-        let rank = await this.userDAO.selectAll({
+        const rank = await this.userDAO.selectAll({
             query: {
                 limit: 10,
                 offset: 0,
@@ -24,6 +23,4 @@ export default class Leaderboard extends VegitoEvent<VegitoCommand> {
         
         await interaction.reply(view.frontend(context))
     }
-
-    override async handleAutocomplete(_interaction: AutocompleteInteraction<CacheType>): Promise<void> {}
 }

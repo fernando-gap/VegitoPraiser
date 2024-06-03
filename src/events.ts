@@ -11,11 +11,19 @@ import { ContextCooldown, JobDataCooldown, VegitoSubCommand } from "./interfaces
 import { Job } from "@hokify/agenda";
 import { CommandType } from "./types.js";
 
+/*
+* All commands and sub-commands are VegitoEvent.
+* A sub-command makes the command unusable.
+* Because of this, a command that has sub-commands will be empty (all of them)
+* This is because all methods that extend VegitoEvent executes 
+* handleChatInputCommand or any other handleXXX function every 
+* time the user calls a slash command
+*/
 
 export default abstract class VegitoEvent<Command extends CommandType> {
     command: Command;
     userDAO: DataAccessUser;
-    user?: User & Model<{}, {}>;
+    user?: User & Model<object, object>;
 
     constructor(protected bot: Bot, command: Command) {
         this.userDAO = new DataAccessUser(this.bot.db);
@@ -25,7 +33,9 @@ export default abstract class VegitoEvent<Command extends CommandType> {
     abstract handleChatInputCommand(interaction: ChatInputCommandInteraction<CacheType>): Promise<void>;
 
     /* most commands does not have autocomplete */
-    protected async handleAutocomplete(_interaction: AutocompleteInteraction<CacheType>): Promise<void> {};
+    // @ts-ignore: abstract class is not a command to be handled but its derived classes
+    // eslint-disable-next-line 
+    protected async handleAutocomplete(interaction: AutocompleteInteraction<CacheType>): Promise<void> { };
 
     setUp(subcommands?: VegitoEvent<VegitoSubCommand>[]): void {
         if (subcommands !== undefined && subcommands.length > 0) {
@@ -36,7 +46,7 @@ export default abstract class VegitoEvent<Command extends CommandType> {
             for (const subcommand of subcommands) {
                 subcommand.setUp();
             }
-        } 
+        }
         else {
             try {
                 if (this.isSubCommand(this.command)) {
@@ -55,7 +65,8 @@ export default abstract class VegitoEvent<Command extends CommandType> {
     }
 
     private setupCommandEvents(): void {
-        this.bot.on(Events.InteractionCreate, async interaction => { if ("commandName" in interaction) {
+        this.bot.on(Events.InteractionCreate, async interaction => {
+            if ("commandName" in interaction) {
 
                 if (interaction.commandName !== this.command.name) {
                     Debug.log(`The command ${interaction.commandName} can't be handled by ${this.command.name}`);
@@ -79,7 +90,7 @@ export default abstract class VegitoEvent<Command extends CommandType> {
     }
 
     private setupSubCommandEvents(): void {
-        this.bot.on(Events.InteractionCreate, async interaction => { 
+        this.bot.on(Events.InteractionCreate, async interaction => {
             if ("commandName" in interaction) {
                 if (!this.isSubCommand(this.command)) return;
 

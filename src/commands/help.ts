@@ -1,4 +1,4 @@
-import { AutocompleteInteraction, CacheType, ChatInputCommandInteraction } from "discord.js";
+import { CacheType, ChatInputCommandInteraction } from "discord.js";
 import { ContextHelp } from "../types.js";
 import { REST, Routes } from "discord.js";
 import config from "../config.js";
@@ -13,6 +13,4 @@ export default class Help extends VegitoEvent<VegitoCommand> {
         const commands = await rest.get(Routes.applicationCommands(config.clientId)) as ContextHelp;
         await interaction.reply(view.frontend(commands));
     }
-
-    override async handleAutocomplete(_interaction: AutocompleteInteraction<CacheType>): Promise<void> {}
 }

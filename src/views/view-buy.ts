@@ -1,6 +1,6 @@
 import { oneLine, stripIndents } from "common-tags";
 import { ContextBuy, View } from "../interfaces.js";
-import { Reply } from "../types.js";
+import { Reply } from "../interfaces.js";
 import { bold } from "discord.js";
 import { Emoji } from "../enums.js";
 import { InvalidContextViewVegitoError } from "../errors.js";

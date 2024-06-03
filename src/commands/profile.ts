@@ -1,4 +1,4 @@
-import { AutocompleteInteraction, CacheType, ChatInputCommandInteraction } from "discord.js";
+import { CacheType, ChatInputCommandInteraction } from "discord.js";
 import { ViewProfile } from "../views/view-profile.js";
 import VegitoEvent from "../events.js";
 import { CommandExecutionVegitoError } from "../errors.js";
@@ -18,6 +18,4 @@ export default class Profile extends VegitoEvent<VegitoCommand> {
             currentPraiseCount: this.user.praiseCount,
         }));
     }
-
-    override async handleAutocomplete(_interaction: AutocompleteInteraction<CacheType>): Promise<void> {}
 }

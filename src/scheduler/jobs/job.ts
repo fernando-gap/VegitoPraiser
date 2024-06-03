@@ -49,7 +49,9 @@ export default abstract class JobVegito {
 
     protected abstract handle(job: Job<any>): Promise<void>;
     abstract exec(job: Job<any>): Promise<void>;
-    async reschedule(_job: Job<any>, _data: JobData): Promise<void> {
+    // @ts-ignore: not all jobs needs rescheduling
+    // eslint-disable-next-line
+    async reschedule(job: Job<any>, data: JobData): Promise<void> {
         throw new NotSchedulableJobVegitoError("scheduler", "the job don't override reschedule");
     }
 }

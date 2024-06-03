@@ -1,4 +1,4 @@
-import { AutocompleteInteraction, CacheType, ChatInputCommandInteraction } from "discord.js";
+import { CacheType, ChatInputCommandInteraction } from "discord.js";
 import VegitoEvent from "../../events.js";
 import { VegitoSubCommand } from "../../interfaces.js";
 import { CommandExecutionVegitoError, NullChannelVegitoError, TransactionVegitoError } from "../../errors.js";
@@ -96,6 +96,4 @@ export default class Hourly extends VegitoEvent<VegitoSubCommand> {
             }
         }
     }
-
-    override async handleAutocomplete(_interaction: AutocompleteInteraction<CacheType>): Promise<void> { }
 }

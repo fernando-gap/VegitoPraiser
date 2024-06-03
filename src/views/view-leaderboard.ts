@@ -1,6 +1,6 @@
 import { EmbedBuilder, bold, userMention } from "discord.js";
 import { ContextLeaderboard, View } from "../interfaces.js";
-import { Reply } from "../types.js";
+import { Reply } from "../interfaces.js";
 import { Color } from "../enums.js";
 
 export default class ViewLeaderboard implements View {
@@ -13,7 +13,7 @@ export default class ViewLeaderboard implements View {
             str += top3[i] + `${userMention(context.users[i].id)} ${bold(context.users[i].praiseCount)}\n`
         }
 
-        for (i = i+1; i < context.users.length; i++) {
+        for (i = i + 1; i < context.users.length; i++) {
             str += `${i + 1}. ${userMention(context.users[i].id)} ${bold(context.users[i].praiseCount)}\n`
         }
 

@@ -1,4 +1,4 @@
-import { AutocompleteInteraction, CacheType, ChatInputCommandInteraction } from "discord.js";
+import { CacheType, ChatInputCommandInteraction } from "discord.js";
 import { ViewPraise } from "../views/view-praise.js";
 import { CommandExecutionVegitoError, NullChannelVegitoError, TransactionVegitoError } from "../errors.js";
 import { ContextCooldown, VegitoCommand } from "../interfaces.js";
@@ -18,9 +18,9 @@ export default class Praise extends VegitoEvent<VegitoCommand> {
         })
 
         if (typeof contextCooldown !== "boolean") {
-                const view = new ViewCooldown()
-                await interaction.reply(view.frontend(contextCooldown));
-                return
+            const view = new ViewCooldown()
+            await interaction.reply(view.frontend(contextCooldown));
+            return
         }
 
         const view = new ViewPraise();
@@ -50,6 +50,4 @@ export default class Praise extends VegitoEvent<VegitoCommand> {
             });
         }
     }
-
-    override async handleAutocomplete(_interaction: AutocompleteInteraction<CacheType>): Promise<void> {}
 }

@@ -39,7 +39,7 @@ abstract class DataAccess<M extends Model> {
 
     async increment(select: Select<IncrementOptions>): Promise<void> {
         if (select.extra !== undefined) {
-            let data = await this.selectOne(select);
+            const data = await this.selectOne(select);
             if (data !== null) {
                 await data.increment(select.extra.incrementColumns, { transaction: select.extra.transaction });
             } else {

@@ -1,12 +1,12 @@
 import { oneLineTrim, stripIndents } from "common-tags";
-import { View } from "../interfaces.js";
-import { ContextShop, Reply } from "../types.js";
+import { Reply, View } from "../interfaces.js";
+import { ContextShop } from "../types.js";
 import { Emoji } from "../enums.js";
 import { bold } from "discord.js";
 
 export default class ViewShop implements View {
     frontend(context: ContextShop): Reply {
-        let items = [];
+        const items = [];
 
         for (const item of context) {
             const itemHeader = oneLineTrim`
@@ -28,7 +28,7 @@ export default class ViewShop implements View {
         console.log(items)
 
         return {
-            content: items.map((item, n) => `**${n+1}**. ${item}`).join("\n\n")
+            content: items.map((item, n) => `**${n + 1}**. ${item}`).join("\n\n")
         }
     }
 }

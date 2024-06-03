@@ -2,7 +2,7 @@ import { oneLine } from "common-tags";
 import { userMention, EmbedBuilder, italic, bold } from "discord.js";
 import { Color } from "../enums.js";
 import { ContextNotifyDaily, View } from "../interfaces.js";
-import { Reply } from "../types.js";
+import { Reply } from "../interfaces.js";
 
 export default class ViewNotifyDaily implements View {
     frontend(context: ContextNotifyDaily): Reply {

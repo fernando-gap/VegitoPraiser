@@ -19,7 +19,9 @@ export class Debug {
     }
 
     static disable() {
-        this.#log = (..._) => {};
+        // @ts-ignore: disable logging by passing an empty function
+        // eslint-disable-next-line
+        this.#log = (..._) => { };
     }
 
     static enable() {

@@ -1,7 +1,7 @@
 import { oneLine } from "common-tags";
 import { Color } from "../enums.js";
 import { Context, View } from "../interfaces.js";
-import { Reply } from "../types.js";
+import { Reply } from "../interfaces.js";
 import { EmbedBuilder, bold, userMention } from "discord.js";
 
 export default class ViewJobNotifyDailyPraise implements View {
@@ -24,5 +24,5 @@ export default class ViewJobNotifyDailyPraise implements View {
             ]
         }
     }
-    
+
 }

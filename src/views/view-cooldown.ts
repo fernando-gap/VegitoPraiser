@@ -1,6 +1,6 @@
 import { oneLine, stripIndents } from "common-tags";
 import { ContextCooldown, View } from "../interfaces.js";
-import { Reply } from "../types.js";
+import { Reply } from "../interfaces.js";
 import { bold, italic, time } from "discord.js";
 
 

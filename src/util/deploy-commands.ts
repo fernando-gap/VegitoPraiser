@@ -10,7 +10,7 @@ import { Debug } from "../debug.js";
 async function deployCommands(args: string[]) {
     const commandsProd: any[] = [];
     const commandsDev: any[] = [];
-    type Command = { [x: string]: VegitoCommand }
+    interface Command { [x: string]: VegitoCommand }
     const commands = Object.values(CommandProperties as Command);
 
     for (const command of commands) {
@@ -71,5 +71,5 @@ async function deployProd(commands: any[]) {
 }
 
 deployCommands(process.argv.slice(2))
-    .then(_ => Debug.log("Finished."))
+    .then(() => Debug.log("Finished."))
     .catch(_ => Debug.error("", _.message))

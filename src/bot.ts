@@ -14,7 +14,7 @@ import Inventory from "./database/models/inventory.js";
 
 export default class Bot extends Client {
     scheduler!: Scheduler;
-    isDevInteraction: boolean = true;
+    isDevInteraction = true;
     db!: Sequelize
     private dbprod?: Sequelize
     private dbdev?: Sequelize

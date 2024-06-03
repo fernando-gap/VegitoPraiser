@@ -1,11 +1,17 @@
 import { Sequelize } from "sequelize-typescript";
-import { Reply } from "./types.js";
 import { Transaction } from "sequelize";
 import ViewCooldown from "./views/view-cooldown.js";
+import { EmbedBuilder } from "discord.js";
 
 /*
 * CONTEXT FOR VIEWS 
 */
+
+export interface Reply {
+    content?: string,
+    ephemeral?: boolean
+    embeds?: EmbedBuilder[],
+}
 
 export interface View {
     frontend(context: ContextRaw): Reply
@@ -15,7 +21,8 @@ export interface View {
 * Used when Context is unnecessary.
 */
 
-export interface ContextRaw { }
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface ContextRaw {}
 
 export interface Context extends ContextRaw {
     userId: string
@@ -34,7 +41,8 @@ export interface ContextNotifyHourly extends Context {
     enable: boolean
 }
 
-export interface ContextNotifyDaily extends ContextNotifyHourly { }
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface ContextNotifyDaily extends ContextNotifyHourly {}
 
 export interface CommandRaw {
     name: string,
@@ -189,11 +197,13 @@ export interface JobDataNotifyHourlyPraise extends JobData {
     channelId: string
 }
 
-export interface JobDataNotifyDailyPraise extends JobDataNotifyHourlyPraise {
-
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface JobDataNotifyDailyPraise extends JobDataNotifyHourlyPraise {}
 
 export interface CommandCooldown {
     view?: ViewCooldown,
     isCooldown: boolean
 }
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore

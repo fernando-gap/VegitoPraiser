@@ -8,7 +8,7 @@
     "cmd:deploy": "node ./src/util/deploy-commands.js",
     "cmd:delete": "node ./src/util/delete-commands.js",
     "prepare": "husky install",
-    "eslint": "npx eslint --fix ."
+    "eslint": "npx eslint --fix ./src/*"
   },
   "engines": {
     "npm": ">=10.2.5",
@@ -38,12 +38,7 @@
     "@types/eslint__js": "^8.42.3",
     "@types/node": "^20.12.13",
     "@types/validator": "^13.11.10",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
     "eslint": "^8.57.0",
-    "eslint-config-standard-with-typescript": "^43.0.1",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-n": "^16.6.2",
-    "eslint-plugin-promise": "^6.1.1",
     "sequelize-cli": "^6.6.2",
     "typescript": "^5.4.5",
     "typescript-eslint": "^7.11.0"

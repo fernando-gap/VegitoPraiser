@@ -1,7 +1,7 @@
 import { EmbedBuilder, bold, italic } from "discord.js";
 import { Context, View } from "../interfaces.js";
 import { Color } from "../enums.js";
-import { Reply } from "../types.js";
+import { Reply } from "../interfaces.js";
 
 export class ViewPraise implements View {
     static praises = [

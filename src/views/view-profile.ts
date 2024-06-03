@@ -3,7 +3,7 @@ import { stripIndents } from "common-tags";
 
 import { ContextProfile, View } from "../interfaces.js";
 import { Color, Emoji } from "../enums.js";
-import { Reply } from "../types.js";
+import { Reply } from "../interfaces.js";
 
 export class ViewProfile implements View {
     frontend(context: ContextProfile): Reply {

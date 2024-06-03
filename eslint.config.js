@@ -1,14 +1,17 @@
 // @ts-check
 
-import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  eslint.configs.recommended,
   ...tseslint.configs.recommended,
-  ...tseslint.configs.strict,
   ...tseslint.configs.stylistic,
   {
-    ignores: ["build", "src/database/migrations", "src/database/seeders"]
-  }
+    ignores: ["build", "src/database/migrations/*", "src/database/seeders/*"],
+    rules: {
+      '@typescript-eslint/no-explicit-any': "off",
+      "@typescript-eslint/consistent-indexed-object-style": "off",
+      "@typescript-eslint/no-namespace": "off",
+      '@typescript-eslint/ban-ts-comment': ["warn", { 'ts-ignore': 'allow-with-description'}]
+    }
+  },
 );

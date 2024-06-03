@@ -45,12 +45,11 @@ export default class Scheduler {
 
     async create(name: string, data: JobData) {
         const job = this.jobs.get(name);
-        let jobInstance;
 
         if (job === undefined) {
             throw new JobNotSetupVegitoError(`${name} job not found`, "the job does not exist")
         }
-        jobInstance = this.drive.create(name, data);
+        const jobInstance = this.drive.create(name, data);
         await job.exec(jobInstance);
     }
 

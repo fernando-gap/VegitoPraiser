@@ -1,11 +1,10 @@
 import { EmbedBuilder } from "discord.js";
 import { Color } from "../enums.js";
-import { View } from "../interfaces.js";
-import { ContextHelp, Reply } from "../types.js";
+import { Reply, View } from "../interfaces.js";
+import { ContextHelp } from "../types.js";
 
 export class ViewHelp implements View {
     frontend(context: ContextHelp): Reply {
-        let str = "Command guide for using VegitoPraiser Bot.\n\n";
         let cmds = "";
 
         for (const command of Object.values(context)) {
@@ -17,7 +16,7 @@ export class ViewHelp implements View {
                 new EmbedBuilder()
                     .setColor(Color.CERULEAN)
                     .setTitle("Vegito Praiser /help")
-                    .setDescription(str + cmds)
+                    .setDescription("Command guide for using VegitoPraiser Bot.\n\n" + cmds)
             ]
         }
     }

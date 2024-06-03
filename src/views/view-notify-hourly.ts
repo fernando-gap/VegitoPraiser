@@ -1,6 +1,6 @@
 import { EmbedBuilder, bold, italic, userMention } from "discord.js";
 import { ContextNotifyHourly, View } from "../interfaces.js";
-import { Reply } from "../types.js";
+import { Reply } from "../interfaces.js";
 import { Color } from "../enums.js";
 import { oneLine } from "common-tags";
 

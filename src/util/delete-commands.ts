@@ -4,7 +4,7 @@ import { Debug } from "../debug.js";
 import { commaListsAnd, stripIndent, stripIndents } from "common-tags";
 import { Environment } from "../enums.js";
 
-type Command = {
+interface Command {
     name: string,
     id: string,
 }
@@ -153,5 +153,5 @@ export async function deleteCommands(args: string[]) {
 }
 
 deleteCommands(process.argv.slice(2))
-    .then(_ => Debug.log("Finished."))
+    .then(() => Debug.log("Finished."))
     .catch(_ => Debug.error("", _.message))

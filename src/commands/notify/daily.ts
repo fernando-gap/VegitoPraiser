@@ -1,4 +1,4 @@
-import { AutocompleteInteraction, CacheType, ChatInputCommandInteraction } from "discord.js";
+import { CacheType, ChatInputCommandInteraction } from "discord.js";
 import VegitoEvent from "../../events.js";
 import { VegitoSubCommand } from "../../interfaces.js";
 import { CommandExecutionVegitoError, NullChannelVegitoError, TransactionVegitoError } from "../../errors.js";
@@ -22,7 +22,7 @@ export default class Daily extends VegitoEvent<VegitoSubCommand> {
                     enable: false,
                     alreadyEnabled: true
                 }))
-            /* enable overwrites all other reminders */
+                /* enable overwrites all other reminders */
             } else {
                 await interaction.reply(view.frontend({
                     userId: interaction.user.id,
@@ -68,7 +68,7 @@ export default class Daily extends VegitoEvent<VegitoSubCommand> {
                     alreadyDisabled: true,
                     enable: false
                 }))
-            /* disable */
+                /* disable */
             } else {
                 await interaction.reply(view.frontend({
                     userId: interaction.user.id,
@@ -97,7 +97,4 @@ export default class Daily extends VegitoEvent<VegitoSubCommand> {
             }
         }
     }
-
-    override async handleAutocomplete(_interaction: AutocompleteInteraction<CacheType>): Promise<void> {}
-
 }
