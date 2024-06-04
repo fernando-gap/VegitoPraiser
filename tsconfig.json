@@ -23,9 +23,12 @@
         "outDir": "build",
         // "assumeChangesOnlyAffectDirectDependencies": true
     },
-    "include": ["src/**/*", "eslint.config.js", ".eslintrc.js"],
+    "include": [
+        "src/**/*",
+        "eslint.config.js"
+    ],
     "exclude": [
         "src/database/migrations/*",
-        "src/database/seeds/*",
+        "src/database/seeders/*",
     ]
 }

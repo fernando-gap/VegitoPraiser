@@ -1,1 +1,1 @@
-declare module '@vladfrangu/async_event_emitter';
+declare module "@vladfrangu/async_event_emitter";

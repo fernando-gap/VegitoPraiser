@@ -1,16 +1,16 @@
 import { Debug } from "./debug.js";
 
 class VegitoError extends Error {
-    override readonly name: string;
+  override readonly name: string;
 
-    constructor(name: string, why: string, options?: any) {
-        super(why, options);
-        this.name = name;
-    }
+  constructor(name: string, why: string, options?: any) {
+    super(why, options);
+    this.name = name;
+  }
 
-    public report() {
-        Debug.error(this.name, this.message, this.cause);
-    }
+  public report() {
+    Debug.error(this.name, this.message, this.cause);
+  }
 }
 
 export class TransactionVegitoError extends VegitoError {}

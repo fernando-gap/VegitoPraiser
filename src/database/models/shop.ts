@@ -1,27 +1,26 @@
 import { BelongsToMany, Column, Model, Table } from "sequelize-typescript";
-import User from "./user.js";
 import Inventory from "./inventory.js";
-
+import User from "./user.js";
 
 @Table({ timestamps: false })
 export default class Shop extends Model {
-    @Column   
-    declare code: string
+  @Column
+  declare code: string;
 
-    @Column
-    declare name: string
+  @Column
+  declare name: string;
 
-    @Column
-    declare price: number
+  @Column
+  declare price: number;
 
-    @Column
-    declare description: string
+  @Column
+  declare description: string;
 
-    @Column
-    declare emoji: string
+  @Column
+  declare emoji: string;
 
-    @BelongsToMany(() => User, () => Inventory)
-    declare users: User[]
+  @BelongsToMany(() => User, () => Inventory)
+  declare users: User[];
 }
 
 // export default (driver, DataTypes) => {
