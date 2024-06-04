@@ -34,7 +34,8 @@ export default class Bot extends Client {
       connection = new DatabaseConnectionProduction("../../db_prod.env");
       this.scheduler = new Scheduler("../../db_scheduler_prod.env");
       this.isDevInteraction = false;
-      Debug.disable();
+
+      if (process.argv[2] !== "--debug") Debug.disable();
     } else if (this.isDev()) {
       connection = new DatabaseConnectionDevelopment("../../db_dev.env");
       this.scheduler = new Scheduler("../../db_scheduler_dev.env");
@@ -48,12 +49,12 @@ export default class Bot extends Client {
     await this.setupDatabase(connection);
     Debug.status(`${process.env.NODE_ENV} database is ready`);
     await this.setupScheduler();
-    Debug.status(`${process.env.NODE_ENV} database is ready`);
+    Debug.status(`${process.env.NODE_ENV} scheduler is ready`);
   }
 
   private async setupDatabase(connection: DatabaseConnection) {
     try {
-      const { sequelize, hasCache: isCache } = connection.getConnection();
+      const sequelize = connection.getConnection();
       if (sequelize === undefined) {
         throw new DatabaseConnectionVegitoError(
           "Connection Error",
@@ -63,16 +64,15 @@ export default class Bot extends Client {
 
       if (connection instanceof DatabaseConnectionDevelopment) {
         this.dbdev = sequelize;
-        this.dbdev.sync({ alter: true });
+        await this.dbdev.sync({ alter: true });
         this.db = this.dbdev;
       } else {
         this.dbprod = sequelize;
+        await this.dbprod.sync();
         this.db = this.dbprod;
       }
 
-      if (!isCache) {
-        this.db.addModels([User, Reminder, Shop, Inventory]);
-      }
+      this.db.addModels([User, Reminder, Shop, Inventory]);
     } catch (e) {
       throw new DatabaseSetupVegitoError(
         "Database Setup Error",
@@ -99,24 +99,14 @@ export default class Bot extends Client {
   }
 
   async connectDev() {
-    if (this.dbdev === undefined) {
-      await this.setupDatabase(
-        new DatabaseConnectionDevelopment("../../db_dev.env"),
-      );
-      this.db = this.dbdev!;
-    } else {
-      this.db = this.dbdev;
-    }
+    await this.setupDatabase(
+      new DatabaseConnectionDevelopment("../../db_dev.env"),
+    );
   }
 
   async connectProd() {
-    if (this.dbprod === undefined) {
-      await this.setupDatabase(
-        new DatabaseConnectionDevelopment("../../db_dev.env"),
-      );
-      this.db = this.dbprod!;
-    } else {
-      this.db = this.dbprod;
-    }
+    await this.setupDatabase(
+      new DatabaseConnectionProduction("../../db_prod.env"),
+    );
   }
 }

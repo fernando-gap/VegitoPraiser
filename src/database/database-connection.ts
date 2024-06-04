@@ -3,29 +3,33 @@ import { readFileSync } from "fs";
 import { resolve } from "path";
 import { Sequelize } from "sequelize-typescript";
 import { Debug } from "../debug.js";
+import { DatabaseSetupVegitoError } from "../errors.js";
 import { ConnectionCache, MySQLConfig } from "../interfaces.js";
 
 export abstract class DatabaseConnection {
   readonly #path: string;
-  static cache: ConnectionCache = { hasCache: false };
 
   constructor(path: string) {
     this.#path = resolve(import.meta.dirname, path);
     Debug.log("DatabaseConnection Path", this.#path);
   }
 
-  public getConnection(): ConnectionCache {
-    if (DatabaseConnection.cache.sequelize === undefined) {
-      DatabaseConnection.cache.sequelize = this.createConnection();
-      DatabaseConnection.cache.hasCache = false;
-    } else {
-      DatabaseConnection.cache.hasCache = true;
-    }
+  public getConnection(): Sequelize {
+    const { sequelize, hasCache } = this.getCache();
 
-    return DatabaseConnection.cache;
+    if (hasCache) {
+      if (sequelize) return sequelize;
+      else
+        throw new DatabaseSetupVegitoError(
+          "getConnection",
+          "Connection is cached but sequelize is undefined",
+        );
+    }
+    return this.createConnection();
   }
 
   protected abstract createConnection(): Sequelize;
+  protected abstract getCache(): ConnectionCache;
 
   protected loadConfig(): MySQLConfig {
     const envs = readFileSync(this.#path);
@@ -35,6 +39,11 @@ export abstract class DatabaseConnection {
 }
 
 export class DatabaseConnectionProduction extends DatabaseConnection {
+  static cache: ConnectionCache = { hasCache: false };
+
+  protected override getCache(): ConnectionCache {
+    return DatabaseConnectionProduction.cache;
+  }
   public override createConnection(): Sequelize {
     const config = this.loadConfig();
 
@@ -49,14 +58,21 @@ export class DatabaseConnectionProduction extends DatabaseConnection {
         define: {
           freezeTableName: true,
         },
-        logging: false,
+        logging: (sql) => Debug.log(sql),
       },
     );
+    DatabaseConnectionProduction.cache.sequelize = sequelize;
+    DatabaseConnectionProduction.cache.hasCache = true;
     return sequelize;
   }
 }
 
 export class DatabaseConnectionDevelopment extends DatabaseConnection {
+  static cache: ConnectionCache = { hasCache: false };
+  protected override getCache(): ConnectionCache {
+    return DatabaseConnectionDevelopment.cache;
+  }
+
   public override createConnection(): Sequelize {
     const config = this.loadConfig();
 
@@ -73,6 +89,8 @@ export class DatabaseConnectionDevelopment extends DatabaseConnection {
         },
       },
     );
+    DatabaseConnectionDevelopment.cache.sequelize = sequelize;
+    DatabaseConnectionDevelopment.cache.hasCache = true;
     return sequelize;
   }
 }

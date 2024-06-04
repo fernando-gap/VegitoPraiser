@@ -81,7 +81,7 @@ export namespace CommandProperties {
                 ),
             ),
         ),
-    isProduction: false,
+    isProduction: true,
   };
 
   export const shop: VegitoCommand = {
