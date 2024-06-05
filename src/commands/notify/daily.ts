@@ -34,6 +34,10 @@ export default class Daily extends VegitoEvent<VegitoSubCommand> {
             alreadyEnabled: true,
           }),
         );
+        await this.bot.scheduler.reschedule("notifyDailyPraise", {
+          userId: interaction.user.id,
+          channelId: interaction.channelId,
+        });
         /* enable overwrites all other reminders */
       } else {
         await interaction.reply(

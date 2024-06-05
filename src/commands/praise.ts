@@ -61,7 +61,7 @@ export default class Praise extends VegitoEvent<VegitoCommand> {
     }
 
     if (this.user.reminderId === 1 /* hourly_enabled */) {
-      await this.bot.scheduler.reschedule("hourlyReminderPraise", {
+      await this.bot.scheduler.reschedule("notifyHourlyPraise", {
         userId: interaction.user.id,
         channelId: interaction.channel.id,
       });

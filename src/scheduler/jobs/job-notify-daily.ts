@@ -2,7 +2,7 @@ import { Job } from "@hokify/agenda";
 import { TextChannel } from "discord.js";
 import Bot from "../../bot.js";
 import { JobNotSetupVegitoError, RuntimeJobVegitoError } from "../../errors.js";
-import { JobDataNotifyDailyPraise } from "../../interfaces.js";
+import { JobData, JobDataNotifyDailyPraise } from "../../interfaces.js";
 import ViewJobNotifyDailyPraise from "../../views/view-job-notify-daily.js";
 import JobVegito from "./job.js";
 
@@ -43,8 +43,13 @@ export default class JobNotifyDailyPraise extends JobVegito {
   }
 
   async exec(job: Job<any>) {
-    job.unique({ "data.userId": job.attrs.data.user_id });
+    job.unique({ "data.userId": job.attrs.data.userId });
     job.repeatEvery("1 day", { skipImmediate: true });
     await job.save();
+  }
+
+  override async reschedule(_job: Job<any>, data: JobData): Promise<void> {
+    const rescheduleJob = this.scheduler.create(this.name, data);
+    this.exec(rescheduleJob);
   }
 }

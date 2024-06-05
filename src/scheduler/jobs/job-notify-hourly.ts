@@ -3,7 +3,7 @@ import { TextChannel } from "discord.js";
 import Bot from "../../bot.js";
 import { DataAccessUser } from "../../database/data-access.js";
 import { RuntimeJobVegitoError } from "../../errors.js";
-import { JobDataNotifyHourlyPraise } from "../../interfaces.js";
+import { JobData, JobDataNotifyHourlyPraise } from "../../interfaces.js";
 import ViewJobNotifyHourlyPraise from "../../views/view-job-notify-hourly.js";
 import JobVegito from "./job.js";
 
@@ -21,7 +21,7 @@ export default class JobNotifyHourlyPraise extends JobVegito {
       /* maybe the channel got deleted ? */
       throw new RuntimeJobVegitoError(
         "channel not found",
-        "This job needs a valid channel",
+        `This job needs a valid channel, the channel ${data.channelId} is not valid`,
       );
     }
 
@@ -38,8 +38,14 @@ export default class JobNotifyHourlyPraise extends JobVegito {
   }
 
   async exec(job: Job<any>) {
-    job.unique({ "data.userId": job.attrs.data.user_id });
+    job.unique({ "data.userId": job.attrs.data.userId });
     job.repeatEvery("1 hour", { skipImmediate: true });
     await job.save();
+  }
+
+  override async reschedule(_job: Job<any>, data: JobData): Promise<void> {
+    // await job.remove();
+    const rescheduleJob = this.scheduler.create(this.name, data);
+    await this.exec(rescheduleJob);
   }
 }

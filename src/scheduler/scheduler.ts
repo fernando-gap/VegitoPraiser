@@ -61,12 +61,12 @@ export default class Scheduler {
     if (job === undefined)
       throw new JobNotSetupVegitoError(
         "job is undefined",
-        "job was not set up with `add`",
+        `job ${name} was not set up with add`,
       );
 
     const oldJob: Job<any>[] = await this.drive.jobs({
       name: name,
-      "data.user_id": newData.user_id,
+      "data.userId": newData.userId,
     });
 
     await job.reschedule(oldJob[0], { ...oldJob[0].attrs.data, ...newData });
