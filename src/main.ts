@@ -1,4 +1,5 @@
 import { ActivityType, Events, GatewayIntentBits } from "discord.js";
+import { exit } from "process";
 import Bot from "./bot.js";
 import {
   CommandProperties,
@@ -22,8 +23,12 @@ import { VegitoCommand } from "./interfaces.js";
   const bot = new Bot({ intents: [GatewayIntentBits.Guilds] });
   await bot.init();
 
-  bot.once(Events.ClientReady, (readyClient) => {
+  bot.once(Events.ClientReady, async (readyClient) => {
     Debug.status(`Ready! Logged in as ${readyClient.user.tag}`);
+    /* scheduler needs bot ready to run jobs */
+    await bot.setupScheduler();
+    Debug.status(`${process.env.NODE_ENV} scheduler is ready`);
+
     readyClient.user.setPresence({
       activities: [
         {
@@ -54,4 +59,10 @@ import { VegitoCommand } from "./interfaces.js";
   ]);
 
   await bot.login(config.token);
-})();
+})()
+  .then(() => Debug.status("settled"))
+  .catch((e) => {
+    Debug.enable();
+    Debug.error("", e);
+    exit(1);
+  });

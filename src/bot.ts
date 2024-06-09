@@ -48,8 +48,6 @@ export default class Bot extends Client {
 
     await this.setupDatabase(connection);
     Debug.status(`${process.env.NODE_ENV} database is ready`);
-    await this.setupScheduler();
-    Debug.status(`${process.env.NODE_ENV} scheduler is ready`);
   }
 
   private async setupDatabase(connection: DatabaseConnection) {

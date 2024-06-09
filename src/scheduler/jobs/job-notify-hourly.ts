@@ -44,7 +44,6 @@ export default class JobNotifyHourlyPraise extends JobVegito {
   }
 
   override async reschedule(_job: Job<any>, data: JobData): Promise<void> {
-    // await job.remove();
     const rescheduleJob = this.scheduler.create(this.name, data);
     await this.exec(rescheduleJob);
   }
