@@ -29,6 +29,12 @@ export default class Bot extends Client {
 
   async init() {
     let connection: DatabaseConnection;
+    /*
+     * Each listener are commands
+     * so it is necessary to increase
+     * as commands increase
+     */
+    this.setMaxListeners(20);
 
     if (this.isProd()) {
       connection = new DatabaseConnectionProduction("../../db_prod.env");

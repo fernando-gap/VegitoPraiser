@@ -7,6 +7,9 @@ import {
 } from "./commands/commands.js";
 import Help from "./commands/help.js";
 import Leaderboard from "./commands/leaderboard.js";
+import Join from "./commands/lofi/join.js";
+import Leave from "./commands/lofi/leave.js";
+import Lofi from "./commands/lofi/lofi.js";
 import Daily from "./commands/notify/daily.js";
 import Hourly from "./commands/notify/hourly.js";
 import Notify from "./commands/notify/notify.js";
@@ -20,7 +23,9 @@ import VegitoEvent from "./events.js";
 import { VegitoCommand } from "./interfaces.js";
 
 (async () => {
-  const bot = new Bot({ intents: [GatewayIntentBits.Guilds] });
+  const bot = new Bot({
+    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates],
+  });
   await bot.init();
 
   bot.once(Events.ClientReady, async (readyClient) => {
@@ -56,6 +61,11 @@ import { VegitoCommand } from "./interfaces.js";
   new Notify(bot, CommandProperties.notify).setUp([
     new Hourly(bot, SubCommandProperties.hourly),
     new Daily(bot, SubCommandProperties.daily),
+  ]);
+
+  new Lofi(bot, CommandProperties.lofi).setUp([
+    new Join(bot, SubCommandProperties.join),
+    new Leave(bot, SubCommandProperties.leave),
   ]);
 
   await bot.login(config.token);

@@ -19,17 +19,20 @@
   "license": "MIT",
   "dependencies": {
     "@discordjs/collection": "^2.1.0",
+    "@discordjs/voice": "^0.17.0",
     "@hokify/agenda": "^6.3.0",
     "common-tags": "^1.8.2",
     "discord.js": "^14.13.0",
     "dotenv": "^16.3.1",
     "husky": "^8.0.3",
     "install": "^0.13.0",
+    "libsodium-wrappers": "^0.7.13",
     "mysql2": "^3.6.2",
     "npm": "^10.2.5",
     "reflect-metadata": "^0.2.2",
     "sequelize": "^6.37.3",
-    "sequelize-typescript": "^2.1.6"
+    "sequelize-typescript": "^2.1.6",
+    "sodium": "^3.0.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.4.0",
