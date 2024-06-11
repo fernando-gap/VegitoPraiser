@@ -9,7 +9,7 @@ export default class ViewJobNotifyHourlyPraise implements View {
 
     return {
       content: oneLine`
-                    ${userMention(context.userId)} ${bold("hourly")} 
+                    ${userMention(context.userId)} ${bold("hourly")}
                     reminder is here, let your praise resound!
                 `,
       embeds: [

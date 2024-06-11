@@ -142,6 +142,33 @@ export interface CreateUserOptions extends QueryOptions {
   };
 }
 
+export interface CreateInventoryOptions extends QueryOptions {
+  query: {
+    where: {
+      userId: string;
+      shopId: string;
+    };
+  };
+  extra: {
+    transaction?: Transaction;
+    defaults: {
+      userId: string;
+      shopId: number;
+    };
+  };
+}
+
+export interface UserItemsOptions extends QueryOptions {
+  query: {
+    where: {
+      id: string;
+    };
+  };
+  extra: {
+    transaction: Transaction;
+  };
+}
+
 export interface FindAllOptions extends QueryOptions {
   query: {
     limit?: number;

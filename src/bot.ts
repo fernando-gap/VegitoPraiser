@@ -60,6 +60,8 @@ export default class Bot extends Client {
         );
       }
 
+      sequelize.addModels([User, Reminder, Shop, Inventory]);
+
       if (connection instanceof DatabaseConnectionDevelopment) {
         this.dbdev = sequelize;
         await this.dbdev.sync({ alter: true });
@@ -69,8 +71,6 @@ export default class Bot extends Client {
         await this.dbprod.sync();
         this.db = this.dbprod;
       }
-
-      this.db.addModels([User, Reminder, Shop, Inventory]);
     } catch (e) {
       throw new DatabaseSetupVegitoError(
         "Database Setup Error",

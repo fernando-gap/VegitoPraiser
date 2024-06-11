@@ -24,12 +24,18 @@ export namespace CommandProperties {
 
   export const praise: VegitoCommand = {
     cooldown: 60 * 60,
-    isProduction: true,
+    isProduction: false,
     name: "praise",
     slash: () =>
       new SlashCommandBuilder()
         .setName("praise")
-        .setDescription("Adore Lord Vegito."),
+        .setDescription("Adore Lord Vegito.")
+        .addStringOption((option) =>
+          option
+            .setName("use")
+            .setDescription("Enhance praise by using an item from inventory!")
+            .setAutocomplete(true),
+        ),
   };
 
   export const profile: VegitoCommand = {

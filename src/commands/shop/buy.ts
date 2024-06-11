@@ -44,8 +44,6 @@ export default class Buy extends VegitoEvent<VegitoCommand> {
       },
     });
 
-    console.log(itemChosen);
-
     if (itemChosen === null) {
       await interaction.reply(view.frontend({ item: null }));
       return;
@@ -61,16 +59,23 @@ export default class Buy extends VegitoEvent<VegitoCommand> {
     if (this.user.potaraCoins >= itemChosen.price) {
       try {
         await this.bot.db.transaction(async (t) => {
-          console.log(itemChosen, itemChosen.id);
-          await this.inventoryDAO.create(
-            {
-              userId: interaction.user.id,
-              shopId: itemChosen.id,
+          const userItem = await this.inventoryDAO.selectOrCreate({
+            query: {
+              where: {
+                userId: interaction.user.id,
+                shopId: itemChosen.id,
+              },
             },
-            {
+            extra: {
               transaction: t,
+              defaults: {
+                userId: interaction.user.id,
+                shopId: itemChosen.id,
+              },
             },
-          );
+          });
+
+          await userItem[0].increment("amount", { transaction: t });
 
           if (this.user === undefined) {
             throw new CommandExecutionVegitoError(

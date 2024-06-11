@@ -9,7 +9,7 @@ export default class ViewJobNotifyDailyPraise implements View {
 
     return {
       content: oneLine`
-                    ${userMention(context.userId)} ${bold("daily")} 
+                    ${userMention(context.userId)} ${bold("daily")}
                     reminder is here, let your praise resound!
                 `,
       embeds: [

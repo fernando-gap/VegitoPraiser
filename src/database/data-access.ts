@@ -4,6 +4,7 @@ import {
   QueryOptionsVegitoError,
 } from "../errors.js";
 import {
+  CreateInventoryOptions,
   CreateOptions,
   CreateUserOptions,
   FindAllOptions,
@@ -11,6 +12,7 @@ import {
   IncrementOptions,
   Select,
   UpdateReminderOptions,
+  UserItemsOptions,
 } from "../interfaces.js";
 import { ModelType, QueryReturn } from "../types.js";
 import Inventory from "./models/inventory.js";
@@ -93,8 +95,33 @@ export class DataAccessUser extends DataAccess<User> {
 
 export class DataAccessShop extends DataAccess<Shop> {
   protected override model: ModelType<Shop> = Shop;
+  async selectUserItems(select: Select<UserItemsOptions>) {
+    return await this.model.findAll({
+      include: [
+        {
+          model: User,
+          required: true,
+          ...select.query,
+        },
+      ],
+      transaction: select.extra?.transaction,
+    });
+  }
 }
 
 export class DataAccessInventory extends DataAccess<Inventory> {
   protected override model: ModelType<Inventory> = Inventory;
+  async selectOrCreate(select: Select<CreateInventoryOptions>) {
+    if (select.extra !== undefined) {
+      return await this.model.findOrCreate({
+        ...select.query,
+        defaults: select.extra.defaults,
+        transaction: select.extra.transaction,
+      });
+    }
+    throw new QueryOptionsVegitoError(
+      "findOrCreate options",
+      "property named `extra` is missing",
+    );
+  }
 }

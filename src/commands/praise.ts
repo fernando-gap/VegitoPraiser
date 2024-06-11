@@ -1,4 +1,14 @@
-import { CacheType, ChatInputCommandInteraction } from "discord.js";
+import {
+  AutocompleteInteraction,
+  CacheType,
+  ChatInputCommandInteraction,
+} from "discord.js";
+import Bot from "../bot.js";
+import {
+  DataAccessInventory,
+  DataAccessShop,
+} from "../database/data-access.js";
+import Shop from "../database/models/shop.js";
 import {
   CommandExecutionVegitoError,
   NullChannelVegitoError,
@@ -6,10 +16,21 @@ import {
 } from "../errors.js";
 import VegitoEvent from "../events.js";
 import { ContextCooldown, VegitoCommand } from "../interfaces.js";
+import { QueryReturn } from "../types.js";
 import ViewCooldown from "../views/view-cooldown.js";
 import { ViewPraise } from "../views/view-praise.js";
 
 export default class Praise extends VegitoEvent<VegitoCommand> {
+  private inventoryDAO: DataAccessInventory;
+  private shopDAO: DataAccessShop;
+  private shopItems: QueryReturn<Shop>[] = [];
+
+  constructor(bot: Bot, command: VegitoCommand) {
+    super(bot, command);
+    this.shopDAO = new DataAccessShop(this.bot.db);
+    this.inventoryDAO = new DataAccessInventory(this.bot.db);
+  }
+
   override async handleChatInputCommand(
     interaction: ChatInputCommandInteraction<CacheType>,
   ) {
@@ -66,5 +87,44 @@ export default class Praise extends VegitoEvent<VegitoCommand> {
         channelId: interaction.channel.id,
       });
     }
+  }
+
+  protected override async handleAutocomplete(
+    interaction: AutocompleteInteraction<CacheType>,
+  ): Promise<void> {
+    const c = await this.shopDAO.selectUserItems({
+      query: {
+        where: {
+          id: interaction.user.id,
+        },
+      },
+    });
+
+    console.log(c[0]);
+    console.log(c[0].users[0]);
+    //   const focusedValue = interaction.options.getFocused();
+
+    //   if (this.shopItems.length <= 0) {
+    //     this.shopItems = await this.shopDAO.selectAll({ query: {} });
+    //   }
+
+    //   const prediction = this.shopItems.filter((choice) => {
+    //     if (choice.name.toLowerCase().includes(focusedValue.toLowerCase())) {
+    //       return choice;
+    //     }
+
+    //     if (choice.code.includes(focusedValue.toLowerCase())) {
+    //       return choice;
+    //     }
+
+    //     return null;
+    //   });
+
+    //   await interaction.respond(
+    //     prediction.map((choice) => ({
+    //       name: choice.name,
+    //       value: String(choice.id),
+    //     })),
+    //   );
   }
 }
