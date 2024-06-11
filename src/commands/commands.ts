@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import { ChannelType, SlashCommandBuilder } from "discord.js";
 import { VegitoCommand, VegitoSubCommand } from "../interfaces.js";
 
 export namespace CommandProperties {
@@ -110,6 +110,31 @@ export namespace CommandProperties {
             .setRequired(true),
         ),
   };
+
+  export const lofi: VegitoCommand = {
+    name: "lofi",
+    cooldown: 0,
+    isProduction: true,
+    slash: () =>
+      new SlashCommandBuilder()
+        .setName("lofi")
+        .setDescription("Listen to Vegito lofi")
+        .addSubcommand((sub) =>
+          sub
+            .setName("join")
+            .setDescription("Connect to a voice channel.")
+            .addChannelOption((channel) =>
+              channel
+                .setName("channel")
+                .setDescription("The channel to connect to.")
+                .addChannelTypes(ChannelType.GuildVoice)
+                .setRequired(true),
+            ),
+        )
+        .addSubcommand((sub) =>
+          sub.setName("leave").setDescription("Leave current voice channel."),
+        ),
+  };
 }
 
 export namespace SubCommandProperties {
@@ -123,5 +148,16 @@ export namespace SubCommandProperties {
     name: "daily",
     cooldown: 0,
     parent: CommandProperties.notify,
+  };
+
+  export const leave: VegitoSubCommand = {
+    name: "leave",
+    cooldown: 0,
+    parent: CommandProperties.lofi,
+  };
+  export const join: VegitoSubCommand = {
+    name: "join",
+    cooldown: 0,
+    parent: CommandProperties.lofi,
   };
 }

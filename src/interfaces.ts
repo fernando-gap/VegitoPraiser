@@ -70,6 +70,14 @@ export interface ContextBuy extends ContextRaw {
   };
 }
 
+export interface ContextLofiJoin extends ContextRaw {
+  channelId: string;
+}
+
+export interface ContextLofiLeave extends ContextRaw {
+  exist: boolean;
+}
+
 /*
  * DATABASE
  */
