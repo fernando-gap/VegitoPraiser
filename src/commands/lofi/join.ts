@@ -48,7 +48,7 @@ export default class Join extends VegitoEvent<VegitoSubCommand> {
       guildId: channel.guildId,
     });
 
-    this.setupAudioPlayer();
+    await this.setupAudioPlayer();
 
     connection.on(VoiceConnectionStatus.Ready, (oldState, newState) => {
       Debug.log("voice connection (old/new)", oldState.status, newState.status);
@@ -62,6 +62,7 @@ export default class Join extends VegitoEvent<VegitoSubCommand> {
       const audioFiles = readdirSync(config.voicePath);
 
       for await (const audio of this.probeAndCreateResource(audioFiles)) {
+        console.log(audio);
         this.audioResources.push(audio);
       }
 
@@ -83,6 +84,7 @@ export default class Join extends VegitoEvent<VegitoSubCommand> {
   async *probeAndCreateResource(audioFiles: string[]) {
     for (const audio of audioFiles) {
       const pathToAudio = path.join(config.voicePath, audio);
+      console.log(pathToAudio);
       const { stream, type } = await demuxProbe(createReadStream(pathToAudio));
       yield createAudioResource(stream, { inputType: type });
     }
@@ -90,7 +92,7 @@ export default class Join extends VegitoEvent<VegitoSubCommand> {
 
   getNextResource(): AudioResource {
     if (this.audioIndex < this.audioResources.length) {
-      return this.audioResources[++this.audioIndex];
+      return this.audioResources[this.audioIndex++];
     }
     this.audioIndex = 0;
     return this.audioResources[this.audioIndex];
