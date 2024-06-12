@@ -141,6 +141,16 @@ export namespace CommandProperties {
           sub.setName("leave").setDescription("Leave current voice channel."),
         ),
   };
+
+  export const inventory: VegitoCommand = {
+    name: "inventory",
+    cooldown: 0,
+    isProduction: false,
+    slash: () =>
+      new SlashCommandBuilder()
+        .setName("inventory")
+        .setDescription("Display inventory items bought from the shop."),
+  };
 }
 
 export namespace SubCommandProperties {

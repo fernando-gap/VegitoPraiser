@@ -28,7 +28,7 @@ export default class Join extends VegitoEvent<VegitoSubCommand> {
     },
   });
   private static hasResourcesBeenSet = false;
-  private audioResources: AudioResource[] = [];
+  private audioResources: AudioResource<{ pathToAudio: string }>[] = [];
   private audioIndex = 0;
   override async handleChatInputCommand(
     interaction: ChatInputCommandInteraction<CacheType>,
@@ -61,8 +61,7 @@ export default class Join extends VegitoEvent<VegitoSubCommand> {
     if (!Join.hasResourcesBeenSet) {
       const audioFiles = readdirSync(config.voicePath);
 
-      for await (const audio of this.probeAndCreateResource(audioFiles)) {
-        console.log(audio);
+      for await (const audio of this.loadResources(audioFiles)) {
         this.audioResources.push(audio);
       }
 
@@ -72,29 +71,59 @@ export default class Join extends VegitoEvent<VegitoSubCommand> {
         );
       });
 
-      Join.audioPlayer.play(this.getNextResource());
+      Join.audioPlayer.play(await this.getNextResource());
 
-      Join.audioPlayer.on(AudioPlayerStatus.Idle, () => {
-        Join.audioPlayer.play(this.getNextResource());
+      Join.audioPlayer.on(AudioPlayerStatus.Idle, async () => {
+        Join.audioPlayer.play(await this.getNextResource());
       });
       Join.hasResourcesBeenSet = true;
     }
   }
 
-  async *probeAndCreateResource(audioFiles: string[]) {
+  async *loadResources(audioFiles: string[]) {
     for (const audio of audioFiles) {
       const pathToAudio = path.join(config.voicePath, audio);
-      console.log(pathToAudio);
-      const { stream, type } = await demuxProbe(createReadStream(pathToAudio));
-      yield createAudioResource(stream, { inputType: type });
+      yield await this.probeAndCreateResource(pathToAudio);
     }
   }
 
-  getNextResource(): AudioResource {
+  async probeAndCreateResource(pathToAudio: string) {
+    const { stream, type } = await demuxProbe(createReadStream(pathToAudio));
+    return createAudioResource<{ pathToAudio: string }>(stream, {
+      inputType: type,
+      metadata: {
+        pathToAudio,
+      },
+    });
+  }
+
+  async renewResource(resource: AudioResource<{ pathToAudio: string }>) {
+    if (resource.ended) {
+      return await this.probeAndCreateResource(resource.metadata.pathToAudio);
+    }
+    return null;
+  }
+
+  async getNextResource(): Promise<AudioResource> {
     if (this.audioIndex < this.audioResources.length) {
+      const newResource = await this.renewResource(
+        this.audioResources[this.audioIndex],
+      );
+
+      if (newResource !== null) {
+        this.audioResources[this.audioIndex] = newResource;
+      }
+
       return this.audioResources[this.audioIndex++];
     }
     this.audioIndex = 0;
-    return this.audioResources[this.audioIndex];
+    const newResource = await this.renewResource(
+      this.audioResources[this.audioIndex++],
+    );
+
+    if (newResource !== null) {
+      this.audioResources[0] = newResource;
+    }
+    return this.audioResources[0];
   }
 }

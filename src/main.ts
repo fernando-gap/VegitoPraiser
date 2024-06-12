@@ -16,6 +16,7 @@ import Notify from "./commands/notify/notify.js";
 import Praise from "./commands/praise.js";
 import Profile from "./commands/profile.js";
 import Buy from "./commands/shop/buy.js";
+import Inventory from "./commands/shop/inventory.js";
 import Shop from "./commands/shop/shop.js";
 import config from "./config.js";
 import { Debug } from "./debug.js";
@@ -52,6 +53,7 @@ import { VegitoCommand } from "./interfaces.js";
     new Leaderboard(bot, CommandProperties.leaderboard),
     new Shop(bot, CommandProperties.shop),
     new Buy(bot, CommandProperties.buy),
+    new Inventory(bot, CommandProperties.inventory),
   ];
 
   for (const command of commands) {

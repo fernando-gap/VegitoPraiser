@@ -28,6 +28,16 @@ export interface Context extends ContextRaw {
   userId: string;
 }
 
+export interface ContextInventory extends ContextRaw {
+  name: string;
+  avatarURL: string;
+  delimiter: string;
+  items: {
+    amount: number;
+    emoji: string;
+  }[];
+}
+
 export interface ContextProfile extends Context {
   currentPraiseCount: number;
   currentPotaraCoins: number;

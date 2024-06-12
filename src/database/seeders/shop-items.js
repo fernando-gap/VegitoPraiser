@@ -14,7 +14,7 @@ module.exports = {
             {
                 name: "Potara Earrings",
                 emoji: "<:potaraearrings:1193378255407951982>",
-                description: "Skips the next cooldown; it lets fuse with a friend",
+                description: "fuse with a friend",
                 code: "ptr",
                 price: 30
             },
@@ -26,23 +26,23 @@ module.exports = {
                 price: 10
             },
             {
-                name: "Dragon Balls",
+                name: "Dragon Ball",
                 emoji: "<:dragonball:1193963653788090479>",
-                description: "gain max double coins or no cooldown once.",
+                description: "2x potara coins for the next praise.",
                 code: "dbz",
                 price: 50
             },
             {
                 name: "Vegito's Gi",
                 emoji: "<:vegitogi:1195760497249755207>",
-                description: "awards you with 1.5x more coins per praise forever.",
+                description: "2x more potara coins per praise forever.",
                 code: "vgi",
                 price: 500
             },
             {
                 name: "Flying Nimbus",
                 emoji: "<:flyingnimbus:1194292069108297778>",
-                description: "awards you with 15 minutes less cooldown forever.",
+                description: "30 minutes less cooldown forever.",
                 code: "fln",
                 price: 200
             }

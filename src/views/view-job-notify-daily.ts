@@ -9,14 +9,16 @@ export default class ViewJobNotifyDailyPraise implements View {
 
     return {
       content: oneLine`
-                    ${userMention(context.userId)} ${bold("daily")}
-                    reminder is here, let your praise resound!
-                `,
+        ${userMention(context.userId)} ${bold("daily")}
+        reminder is here, let your praise resound!
+      `,
       embeds: [
-        new EmbedBuilder().setColor(Color.CERULEAN).setDescription(oneLine`
-                            Use ${praise} to unleash the power of Vegito, 
-                            uniting us in celestial devotion.
-                    `),
+        new EmbedBuilder().setColor(Color.CERULEAN).setDescription(
+          oneLine`
+            Use ${praise} to unleash the power of Vegito, 
+            uniting us in celestial devotion.
+          `,
+        ),
       ],
     };
   }
