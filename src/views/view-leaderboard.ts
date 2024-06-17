@@ -14,7 +14,7 @@ export default class ViewLeaderboard implements View {
         `${userMention(context.users[i].id)} ${bold(context.users[i].praiseCount)}\n`;
     }
 
-    for (i = i + 1; i < context.users.length; i++) {
+    for (; i < context.users.length; i++) {
       str += `${i + 1}. ${userMention(context.users[i].id)} ${bold(context.users[i].praiseCount)}\n`;
     }
 
