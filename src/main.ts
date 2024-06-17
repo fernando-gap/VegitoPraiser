@@ -18,6 +18,7 @@ import Profile from "./commands/profile.js";
 import Buy from "./commands/shop/buy.js";
 import Inventory from "./commands/shop/inventory.js";
 import Shop from "./commands/shop/shop.js";
+import Smirk from "./commands/smirk.js";
 import config from "./config.js";
 import { Debug } from "./debug.js";
 import VegitoEvent from "./events.js";
@@ -54,6 +55,7 @@ import { VegitoCommand } from "./interfaces.js";
     new Shop(bot, CommandProperties.shop),
     new Buy(bot, CommandProperties.buy),
     new Inventory(bot, CommandProperties.inventory),
+    new Smirk(bot, CommandProperties.smirk),
   ];
 
   for (const command of commands) {

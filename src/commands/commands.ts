@@ -24,7 +24,7 @@ export namespace CommandProperties {
 
   export const praise: VegitoCommand = {
     cooldown: 60 * 60,
-    isProduction: false,
+    isProduction: true,
     name: "praise",
     slash: () =>
       new SlashCommandBuilder()
@@ -150,6 +150,39 @@ export namespace CommandProperties {
       new SlashCommandBuilder()
         .setName("inventory")
         .setDescription("Display inventory items bought from the shop."),
+  };
+  export const smirk: VegitoCommand = {
+    name: "smirk",
+    cooldown: 0,
+    isProduction: true,
+    slash: () =>
+      new SlashCommandBuilder()
+        .setName("smirk")
+        .setDescription("Send a Vegeta smirk. (default as gif)")
+        .addUserOption((option) =>
+          option.setName("who").setDescription("Send smirk to someone."),
+        )
+        .addStringOption((option) =>
+          option
+            .setName("type")
+            .setDescription(
+              "Choose what smirk to send and which type (gif/emoji)",
+            )
+            .addChoices(
+              {
+                name: "reverse",
+                value: "reverse",
+              },
+              {
+                name: "small",
+                value: "small",
+              },
+              {
+                name: "small reverse",
+                value: "small reverse",
+              },
+            ),
+        ),
   };
 }
 

@@ -88,6 +88,11 @@ export interface ContextLofiLeave extends ContextRaw {
   exist: boolean;
 }
 
+export interface ContextSmirk extends ContextRaw {
+  type: string | null;
+  who: string | undefined;
+}
+
 /*
  * DATABASE
  */
