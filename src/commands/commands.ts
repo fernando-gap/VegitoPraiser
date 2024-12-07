@@ -93,7 +93,7 @@ export namespace CommandProperties {
   export const shop: VegitoCommand = {
     name: "shop",
     cooldown: 0,
-    isProduction: false,
+    isProduction: true,
     slash: () =>
       new SlashCommandBuilder()
         .setName("shop")
@@ -103,7 +103,7 @@ export namespace CommandProperties {
   export const buy: VegitoCommand = {
     name: "buy",
     cooldown: 0,
-    isProduction: false,
+    isProduction: true,
     slash: () =>
       new SlashCommandBuilder()
         .setName("buy")
@@ -145,7 +145,7 @@ export namespace CommandProperties {
   export const inventory: VegitoCommand = {
     name: "inventory",
     cooldown: 0,
-    isProduction: false,
+    isProduction: true,
     slash: () =>
       new SlashCommandBuilder()
         .setName("inventory")

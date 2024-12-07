@@ -143,7 +143,7 @@ export default class Buy extends VegitoEvent<VegitoCommand> {
 
     await interaction.respond(
       prediction.map((choice) => ({
-        name: choice.name,
+        name: `${choice.name} (${choice.price})`,
         value: String(choice.id),
       })),
     );

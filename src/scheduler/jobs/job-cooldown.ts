@@ -15,7 +15,7 @@ export default class JobCooldown extends JobVegito {
       "data.commandName": data.commandName,
     });
 
-    job.priority("high");
+    job.priority("highest");
     job.schedule(new Date(data.endDate));
     await job.save();
   }

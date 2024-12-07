@@ -4,7 +4,8 @@
   "description": "",
   "main": "./build/main.js",
   "scripts": {
-    "bot:test": "echo \"Error: no test specified\" && exit 1",
+    "bot:test": "npx tsc && NODE_ENV=development node build/main.js --debug",
+    "bot:run": "NODE_ENV=development node build/main.js --debug",
     "cmd:deploy": "node ./src/util/deploy-commands.js",
     "cmd:delete": "node ./src/util/delete-commands.js",
     "prepare": "husky install",
