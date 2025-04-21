@@ -1,0 +1,38 @@
+version: "3.1"
+
+services:
+  vegito:
+    container_name: "VegitoPraiser"
+    build: .
+    restart: unless-stopped
+    depends_on:
+      - db_prod
+      - db_scheduler_prod
+  db_prod:
+    container_name: "VegitoDB"
+    image: mysql
+    ports:
+      - 3306:3306
+    env_file:
+      - db_prod.env
+    restart: unless-stopped
+    volumes:
+      - vegitopraiser_data_prod:/var/lib/mysql
+  db_scheduler_prod:
+    container_name: "VegitoScheduler"
+    image: mongo
+    restart: unless-stopped
+    env_file:
+      - db_scheduler_prod.env
+    ports:
+      - 27017:27017
+    volumes:
+      - vegitopraiser_scheduler_prod:/data/db
+volumes:
+  vegitopraiser_data_prod:
+    external: true
+  vegitopraiser_scheduler_prod:
+
+networks:
+  vegitopraiser_prod:
+    driver: bridge

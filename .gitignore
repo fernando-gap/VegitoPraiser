@@ -8,7 +8,6 @@ database.js
 
 *.env
 *.service
-*.production.yml
 
 node_modules
 TODO

@@ -36,6 +36,7 @@ export default class Scheduler {
       db: { address: mongoURL },
       ensureIndex: true,
     });
+    Debug.log("SchedulerConnection Path", this.#path);
   }
 
   add(job: JobVegito) {

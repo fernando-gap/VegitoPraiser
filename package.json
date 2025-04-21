@@ -5,6 +5,7 @@
   "main": "./build/main.js",
   "scripts": {
     "bot:test": "npx tsc && NODE_ENV=development node build/main.js --debug",
+    "bot:build": "npx tsc",
     "bot:run": "NODE_ENV=development node build/main.js --debug",
     "cmd:deploy": "node ./src/util/deploy-commands.js",
     "cmd:delete": "node ./src/util/delete-commands.js",
