@@ -1,0 +1,11 @@
+FROM node:23.9.0-alpine
+WORKDIR /usr/local/VegitoPraiser/code
+ENV NODE_ENV="development"
+
+COPY ./build /usr/local/VegitoPraiser/code
+COPY ./node_modules /usr/local/VegitoPraiser/node_modules
+COPY db_dev.env /usr/local/VegitoPraiser/db_dev.env
+COPY db_scheduler_dev.env /usr/local/VegitoPraiser/db_scheduler_dev.env
+
+RUN ls /usr/local/VegitoPraiser
+CMD ["node", "main.js", "--debug"]

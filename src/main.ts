@@ -39,7 +39,7 @@ import { VegitoCommand } from "./interfaces.js";
     readyClient.user.setPresence({
       activities: [
         {
-          name: "The honour is to Vegito.",
+          name: "OUR LORD AND SAVIOR",
           type: ActivityType.Custom,
         },
       ],

@@ -1,9 +1,19 @@
-version: '3.1'
+version: "3.1"
 
 services:
+  vegito:
+    container_name: "Dev-VegitoPraiser"
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    depends_on:
+      - db_dev
+      - db_scheduler_dev
   db_dev:
     image: mysql
-    container_name: "DevVegitoDB"
+    container_name: "Dev-VegitoDB"
+    attach: false
     ports:
       - 3307:3306
     env_file:
@@ -13,6 +23,8 @@ services:
       - vegitopraiser_data_dev:/var/lib/mysql
   db_scheduler_dev:
     image: mongo
+    container_name: Dev-VegitoScheduler
+    attach: false
     restart: on-failure
     env_file:
       - db_scheduler_dev.env

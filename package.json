@@ -6,7 +6,11 @@
   "scripts": {
     "bot:test": "npx tsc && NODE_ENV=development node build/main.js --debug",
     "bot:build": "npx tsc",
-    "bot:run": "NODE_ENV=development node build/main.js --debug",
+    "bot:dev:up": "npx tsc && docker compose -f docker-compose.dev.yml up --watch --build",
+    "bot:dev:down": "docker compose -f docker-compose.dev.yml down",
+    "bot:prod:run": "NODE_ENV=production node build/main.js --debug",
+    "bot:prod:up": "npx tsc && docker compose -f docker-compose.production.yml up --build -d",
+    "bot:prod:down": "docker compose -f docker-compose.production.yml down",
     "cmd:deploy": "node ./src/util/deploy-commands.js",
     "cmd:delete": "node ./src/util/delete-commands.js",
     "prepare": "husky install",
